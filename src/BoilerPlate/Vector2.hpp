@@ -39,5 +39,3 @@ struct Vector2
 };
 
 #endif // !_VECTOR2_H_
-
-
