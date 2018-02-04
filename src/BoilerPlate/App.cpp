@@ -10,9 +10,14 @@
 #include "Color.h"
 #include "ColorPalette.h"
 #include "MathUtilities.h"
+#include "Player.hpp"
 
 namespace Engine
 {
+	//test variables
+	float xVal = 0.0f, yVal = 0.0f;
+
+	Player aPlayer; //PLAYER
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
 
@@ -80,15 +85,10 @@ namespace Engine
 
 		return true;
 	}
-
+	
 	void App::OnKeyDown(SDL_KeyboardEvent keyBoardEvent)
 	{
-		switch (keyBoardEvent.keysym.scancode)
-		{
-		default:
-			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
-			break;
-		}
+		aPlayer.Update(keyBoardEvent);
 	}
 
 	void App::OnKeyUp(SDL_KeyboardEvent keyBoardEvent)
@@ -136,12 +136,14 @@ namespace Engine
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glBegin(GL_LINE_LOOP);
-		glVertex2f(50.0, 50.0);
-		glVertex2f(50.0, -50.0);
-		glVertex2f(-50.0, -50.0);
-		glVertex2f(-50.0, 50.0);
-		glEnd();
+		/*glBegin(GL_LINE_LOOP);
+		glVertex2f(50.0+xVal, 50.0+yVal);
+		glVertex2f(50.0+xVal, -50.0+yVal);
+		glVertex2f(-50.0+xVal, -50.0+yVal);
+		glVertex2f(-50.0+xVal, 50.0+yVal);
+		glEnd();*/
+
+		aPlayer.Render();
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}
