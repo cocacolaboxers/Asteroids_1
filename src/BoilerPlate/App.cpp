@@ -98,6 +98,10 @@ namespace Engine
 		case SDL_SCANCODE_ESCAPE:
 			OnExit();
 			break;
+
+		case SDL_SCANCODE_UP:
+			aPlayer.thrusterActivated = false;
+			break;
 		default:
 			//DO NOTHING
 			break;

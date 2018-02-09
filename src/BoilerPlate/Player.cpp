@@ -18,6 +18,7 @@ void Player::Update(SDL_KeyboardEvent keyBoardEvent)
 
 	case SDL_SCANCODE_UP:
 		position.y++;
+		thrusterActivated = true;
 		break;
 
 	case SDL_SCANCODE_LEFT:
@@ -40,8 +41,20 @@ void Player::Render()
 	
 	//Draw triangle
 	glBegin(GL_LINE_LOOP);
-	glVertex2f(0.0 + position.x, 50.0 + position.y);
-	glVertex2f(50.0 + position.x, -50.0 + position.y);
-	glVertex2f(-50.0 + position.x, -50.0 + position.y);
+	glVertex2f(0.0, 20.0);
+	glVertex2f(12.0, -10.0);
+	glVertex2f(6.0, -4.0);
+	glVertex2f(-6.0, -4.0);
+	glVertex2f(-12.0, -10.0);
+
 	glEnd();
+
+	if (thrusterActivated)
+	{
+		glBegin(GL_LINE_LOOP);
+		glVertex2f(6.0, -4.0);
+		glVertex2f(-6.0, -4.0);
+		glVertex2f(0.0, -14.0);
+		glEnd();
+	}
 }

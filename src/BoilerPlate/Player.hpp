@@ -12,6 +12,8 @@ public:
 	void Update(SDL_KeyboardEvent);
 	void Render();
 	Player();
+	void thruster();
+	bool thrusterActivated = false;
 
 private:
 	/*MEMBERS*/
