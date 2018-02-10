@@ -5,41 +5,36 @@
 
 Player::Player()
 {
-	position = Vector2();
+	playerPosition = new Vector2();
+	thrusterActivated = false;
 }
 
-void Player::Update(SDL_KeyboardEvent keyBoardEvent)
-{
-	switch (keyBoardEvent.keysym.scancode)
-	{
-	case SDL_SCANCODE_DOWN:
-		position.y--;
-		break;
+void Player::Update()
+{}
 
-	case SDL_SCANCODE_UP:
-		position.y++;
-		thrusterActivated = true;
-		break;
-
-	case SDL_SCANCODE_LEFT:
-		position.x--;
-		break;
-
-	case SDL_SCANCODE_RIGHT:
-		position.x++;
-		break;
-	default:
-		SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
-		break;
-	}
+void Player::Move(const Vector2& unit) {
+	playerPosition->x += unit.x;
+	playerPosition->y += unit.y;
 }
+
+void Player::Warp()
+{}
+
+void Player::MoveForward()
+{}
+
+void Player::RotateLeft()
+{}
+
+void Player::RotateRight()
+{}
 
 void Player::Render()
 {
 	glLoadIdentity();
-	glTranslatef(position.x, position.y, 0.0f);
+	glTranslatef(playerPosition->x, playerPosition->y, 0.0f);
 	
-	//Draw triangle
+	//Draw ship
 	glBegin(GL_LINE_LOOP);
 	glVertex2f(0.0, 20.0);
 	glVertex2f(12.0, -10.0);
@@ -49,6 +44,7 @@ void Player::Render()
 
 	glEnd();
 
+	//Draw thrust 
 	if (thrusterActivated)
 	{
 		glBegin(GL_LINE_LOOP);

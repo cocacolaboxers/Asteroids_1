@@ -14,10 +14,10 @@
 
 namespace Engine
 {
-	//test variables
-	float xVal = 0.0f, yVal = 0.0f;
+	const float movingScale = 15.0f; // 15:1
 
-	Player aPlayer; //PLAYER
+	Player player1;
+
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
 
@@ -88,7 +88,32 @@ namespace Engine
 	
 	void App::OnKeyDown(SDL_KeyboardEvent keyBoardEvent)
 	{
-		aPlayer.Update(keyBoardEvent);
+		switch (keyBoardEvent.keysym.scancode)
+		{
+		case SDL_SCANCODE_DOWN:
+			SDL_Log("Down key was pressed.");
+			player1.Move(Vector2(0.0f, -movingScale));
+			break;
+
+		case SDL_SCANCODE_UP:
+			SDL_Log("Up key was pressed.");
+			player1.Move(Vector2(0.0f, movingScale));
+			player1.thrusterActivated = true;
+			break;
+
+		case SDL_SCANCODE_LEFT:
+			SDL_Log("Left key was pressed.");
+			player1.Move(Vector2(-movingScale, 0.0f));
+			break;
+
+		case SDL_SCANCODE_RIGHT:
+			SDL_Log("Right key was pressed.");
+			player1.Move(Vector2(movingScale, 0.0f));
+			break;
+		default:
+			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
+			break;
+		}
 	}
 
 	void App::OnKeyUp(SDL_KeyboardEvent keyBoardEvent)
@@ -100,7 +125,7 @@ namespace Engine
 			break;
 
 		case SDL_SCANCODE_UP:
-			aPlayer.thrusterActivated = false;
+			player1.thrusterActivated = false;
 			break;
 		default:
 			//DO NOTHING
@@ -140,14 +165,7 @@ namespace Engine
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		/*glBegin(GL_LINE_LOOP);
-		glVertex2f(50.0+xVal, 50.0+yVal);
-		glVertex2f(50.0+xVal, -50.0+yVal);
-		glVertex2f(-50.0+xVal, -50.0+yVal);
-		glVertex2f(-50.0+xVal, 50.0+yVal);
-		glEnd();*/
-
-		aPlayer.Render();
+		player1.Render();
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}
