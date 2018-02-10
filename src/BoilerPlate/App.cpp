@@ -7,9 +7,9 @@
 #include <SDL2/SDL_opengl.h>
 
 //New classes includes
-#include "Color.h"
-#include "ColorPalette.h"
-#include "MathUtilities.h"
+#include "Color.hpp"
+#include "ColorPalette.hpp"
+#include "MathUtilities.hpp"
 #include "Player.hpp"
 
 namespace Engine

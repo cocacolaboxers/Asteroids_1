@@ -119,6 +119,7 @@ Vector3& Vector3::operator/=(const Vector3& aVector3)
 {
 	if (aVector3.x == 0) throw "Can't divide by zero";
 	if (aVector3.y == 0) throw "Can't divide by zero";
+	if (aVector3.z == 0) throw "Can't divide by zero";
 
 	x = x / aVector3.x;
 	y = y / aVector3.y;
@@ -165,6 +166,7 @@ Vector3 Vector3::operator/(const Vector3& aVector3) const
 {
 	if (aVector3.x == 0) throw "Can't divide by zero";
 	if (aVector3.y == 0) throw "Can't divide by zero";
+	if (aVector3.z == 0) throw "Can't divide by zero";
 
 	float resultingXvalue = x / aVector3.x;
 	float resultingYvalue = y / aVector3.y;
