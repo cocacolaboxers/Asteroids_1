@@ -16,8 +16,8 @@ public:
 	void Update(void);
 	void Render(void);
 
-	void Move(const Vector2& unit);
-	void Warp(void);
+	void Move(const Vector2& unit, float, float);
+	float Warp(float, float, float);
 	void MoveForward(void);
 	void RotateLeft(void);
 	void RotateRight(void);

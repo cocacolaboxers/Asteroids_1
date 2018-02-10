@@ -14,7 +14,7 @@
 
 namespace Engine
 {
-	const float movingScale = 15.0f; // 15:1
+	const float movingScale = 12.0f; // 12:1
 
 	Player player1;
 
@@ -92,23 +92,23 @@ namespace Engine
 		{
 		case SDL_SCANCODE_DOWN:
 			SDL_Log("Down key was pressed.");
-			player1.Move(Vector2(0.0f, -movingScale));
+			player1.Move(Vector2(0.0f, -movingScale), m_height, m_width);
 			break;
 
 		case SDL_SCANCODE_UP:
 			SDL_Log("Up key was pressed.");
-			player1.Move(Vector2(0.0f, movingScale));
+			player1.Move(Vector2(0.0f, movingScale), m_height, m_width);
 			player1.thrusterActivated = true;
 			break;
 
 		case SDL_SCANCODE_LEFT:
 			SDL_Log("Left key was pressed.");
-			player1.Move(Vector2(-movingScale, 0.0f));
+			player1.Move(Vector2(-movingScale, 0.0f), m_height, m_width);
 			break;
 
 		case SDL_SCANCODE_RIGHT:
 			SDL_Log("Right key was pressed.");
-			player1.Move(Vector2(movingScale, 0.0f));
+			player1.Move(Vector2(movingScale, 0.0f), m_height, m_width);
 			break;
 		default:
 			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
