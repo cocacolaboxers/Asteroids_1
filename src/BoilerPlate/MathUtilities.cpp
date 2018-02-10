@@ -1,4 +1,4 @@
-#include "MathUtilities.h"
+#include "MathUtilities.hpp"
 
 
 MathUtilities::MathUtilities()

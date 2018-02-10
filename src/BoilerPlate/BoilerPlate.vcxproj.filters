@@ -29,15 +29,6 @@
     <ClInclude Include="App.hpp" />
     <ClInclude Include="SDLEvent.hpp" />
     <ClInclude Include="TimeManager.hpp" />
-    <ClInclude Include="MathUtilities.h">
-      <Filter>Engine\Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="Color.h">
-      <Filter>Engine\Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorPalette.h">
-      <Filter>Engine\Header files</Filter>
-    </ClInclude>
     <ClInclude Include="Vector2.hpp">
       <Filter>Engine\Header files</Filter>
     </ClInclude>
@@ -45,6 +36,15 @@
       <Filter>Engine\Header files</Filter>
     </ClInclude>
     <ClInclude Include="Player.hpp">
+      <Filter>Engine\Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.hpp">
+      <Filter>Engine\Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorPalette.hpp">
+      <Filter>Engine\Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="MathUtilities.hpp">
       <Filter>Engine\Header files</Filter>
     </ClInclude>
   </ItemGroup>

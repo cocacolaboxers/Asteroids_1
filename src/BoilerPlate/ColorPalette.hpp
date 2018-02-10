@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Color.h"
+#include "Color.hpp"
 
 class ColorPalette
 {
@@ -14,4 +14,3 @@ public:
 	ColorPalette();
 	~ColorPalette();
 };
-

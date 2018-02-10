@@ -1,6 +1,6 @@
+#include "Vector2.hpp"
 #include "Vector3.hpp"
 #include <cmath>
-#include "Vector2.hpp"
 
 /*Default constructor*/
 Vector3::Vector3()

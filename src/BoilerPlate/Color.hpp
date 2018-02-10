@@ -12,4 +12,3 @@ public:
 	Color(GLfloat newRedValue, GLfloat newGreenValue, GLfloat newBlueValue, GLfloat newAlphaValue);
 	~Color();
 };
-

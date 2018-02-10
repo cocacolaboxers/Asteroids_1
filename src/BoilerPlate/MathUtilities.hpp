@@ -1,5 +1,5 @@
 #pragma once
-#include <math.h>
+#include <cmath>
 
 const double pi = 3.1415926535897;
 
@@ -87,4 +87,3 @@ public:
 
 	~MathUtilities();
 };
-
