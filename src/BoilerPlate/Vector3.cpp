@@ -1,5 +1,6 @@
 #include "Vector3.hpp"
 #include <cmath>
+#include "Vector2.hpp"
 
 /*Default constructor*/
 Vector3::Vector3()
@@ -25,6 +26,14 @@ Vector3::Vector3(float val)
 	x = val;
 	y = val;
 	z = val;
+	length = Length();
+}
+
+Vector3::Vector3(const Vector2& vector2)
+{
+	x = vector2.x;
+	y = vector2.y;
+	z = 0.0f;
 	length = Length();
 }
 
