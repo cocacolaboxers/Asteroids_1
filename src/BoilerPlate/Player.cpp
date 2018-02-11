@@ -18,9 +18,9 @@ void Player::Move(const Vector2& unit, float windowHeight, float windowWidth) {
 	
 	//Calculate max and min height and width
 	float minHeight  = -windowHeight / 2;
-	float maxHeight  = windowHeight  / 2;
+	float maxHeight  = -minHeight;
 	float minWidth   = -windowWidth  / 2;
-	float maxWidth   = windowWidth   / 2;
+	float maxWidth   = -minWidth;
 
 	//Warp
 	playerPosition->x = Warp(playerPosition->x, minWidth, maxWidth);
