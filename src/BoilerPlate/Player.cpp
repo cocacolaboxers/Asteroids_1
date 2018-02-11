@@ -15,8 +15,8 @@ void Player::Update()
 void Player::Move(const Vector2& unit, float windowHeight, float windowWidth) {
 	playerPosition->x += unit.x;
 	playerPosition->y += unit.y;
-
-	//Calculat max and min height and width
+	
+	//Calculate max and min height and width
 	float minHeight  = -windowHeight / 2;
 	float maxHeight  = windowHeight  / 2;
 	float minWidth   = -windowWidth  / 2;
