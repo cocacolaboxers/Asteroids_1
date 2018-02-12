@@ -10,6 +10,14 @@
 #include "SDLEvent.hpp"
 #include "TimeManager.hpp"
 
+//New classes includes
+#include "Color.hpp"
+#include "ColorPalette.hpp"
+#include "MathUtilities.hpp"
+#include "Player.hpp"
+
+const float desiredMovingRate = 12.0f; // 12:1
+
 namespace Engine
 {
 	class App : public SDLEvent
@@ -66,6 +74,7 @@ namespace Engine
 		SDL_GLContext						m_context;
 		GameState::State					m_state;
 		Engine::TimeManager*				m_timer;
+		Player*								player1;
 
 	};
 }

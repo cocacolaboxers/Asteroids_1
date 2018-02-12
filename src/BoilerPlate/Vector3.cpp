@@ -1,3 +1,4 @@
+#include "Vector2.hpp"
 #include "Vector3.hpp"
 #include <cmath>
 
@@ -11,20 +12,28 @@ Vector3::Vector3()
 }
 
 /*Parameterized constructor. Sets the x, y and z values to the specified ones*/
-Vector3::Vector3(float xVal, float yVal, float zVal)
+Vector3::Vector3(float xValue, float yValue, float zValue)
 {
-	x = xVal;
-	y = yVal;
-	z = zVal;
+	x = xValue;
+	y = yValue;
+	z = zValue;
 	length = Length();
 }
 
 /*Parameterized constructor. Sets the x, y and z values to the same specified value*/
-Vector3::Vector3(float val)
+Vector3::Vector3(float value)
 {
-	x = val;
-	y = val;
-	z = val;
+	x = value;
+	y = value;
+	z = value;
+	length = Length();
+}
+
+Vector3::Vector3(const Vector2& vector2)
+{
+	x = vector2.x;
+	y = vector2.y;
+	z = 0.0f;
 	length = Length();
 }
 
@@ -110,6 +119,7 @@ Vector3& Vector3::operator/=(const Vector3& aVector3)
 {
 	if (aVector3.x == 0) throw "Can't divide by zero";
 	if (aVector3.y == 0) throw "Can't divide by zero";
+	if (aVector3.z == 0) throw "Can't divide by zero";
 
 	x = x / aVector3.x;
 	y = y / aVector3.y;
@@ -156,6 +166,7 @@ Vector3 Vector3::operator/(const Vector3& aVector3) const
 {
 	if (aVector3.x == 0) throw "Can't divide by zero";
 	if (aVector3.y == 0) throw "Can't divide by zero";
+	if (aVector3.z == 0) throw "Can't divide by zero";
 
 	float resultingXvalue = x / aVector3.x;
 	float resultingYvalue = y / aVector3.y;
