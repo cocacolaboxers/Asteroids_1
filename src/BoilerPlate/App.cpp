@@ -6,18 +6,8 @@
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 
-//New classes includes
-#include "Color.hpp"
-#include "ColorPalette.hpp"
-#include "MathUtilities.hpp"
-#include "Player.hpp"
-
 namespace Engine
 {
-	const float movingScale = 12.0f; // 12:1
-
-	Player player1;
-
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
 
@@ -31,10 +21,15 @@ namespace Engine
 	{
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
+		player1 = new Player();
 	}
 
 	App::~App()
 	{
+		if (player1) 
+		{
+			delete player1;
+		}
 		CleanupSDL();
 	}
 
@@ -92,23 +87,23 @@ namespace Engine
 		{
 		case SDL_SCANCODE_DOWN:
 			SDL_Log("Down key was pressed.");
-			player1.Move(Vector2(0.0f, -movingScale), m_height, m_width);
+			player1->Move(Vector2(0.0f, -desiredMovingRate));
 			break;
 
 		case SDL_SCANCODE_UP:
 			SDL_Log("Up key was pressed.");
-			player1.Move(Vector2(0.0f, movingScale), m_height, m_width);
-			player1.thrusterActivated = true;
+			player1->Move(Vector2(0.0f, desiredMovingRate));
+			player1->setThrustingStatus(true);
 			break;
 
 		case SDL_SCANCODE_LEFT:
 			SDL_Log("Left key was pressed.");
-			player1.Move(Vector2(-movingScale, 0.0f), m_height, m_width);
+			player1->Move(Vector2(-desiredMovingRate, 0.0f));
 			break;
 
 		case SDL_SCANCODE_RIGHT:
 			SDL_Log("Right key was pressed.");
-			player1.Move(Vector2(movingScale, 0.0f), m_height, m_width);
+			player1->Move(Vector2(desiredMovingRate, 0.0f));
 			break;
 		default:
 			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
@@ -125,7 +120,7 @@ namespace Engine
 			break;
 
 		case SDL_SCANCODE_UP:
-			player1.thrusterActivated = false;
+			player1->setThrustingStatus(false);
 			break;
 		default:
 			//DO NOTHING
@@ -165,7 +160,7 @@ namespace Engine
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		player1.Render();
+		player1->Render();
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}
@@ -267,6 +262,8 @@ namespace Engine
 		m_height = height;
 
 		SetupViewport();
+
+		player1->OnWindowResize(m_height, m_width);
 	}
 
 	void App::OnExit()

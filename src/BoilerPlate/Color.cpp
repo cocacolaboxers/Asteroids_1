@@ -4,7 +4,7 @@ Color::Color()
 {
 }
 
-Color::Color(GLfloat newRedValue, GLfloat newGreenValue, GLfloat newBlueValue, GLfloat newAlphaValue)
+Color::Color(float newRedValue, float newGreenValue, float newBlueValue, float newAlphaValue)
 {
 	redValue = newRedValue;
 	greenValue = newGreenValue;

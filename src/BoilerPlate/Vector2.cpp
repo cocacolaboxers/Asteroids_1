@@ -1,6 +1,8 @@
 #include "Vector2.hpp"
 #include <cmath>
 
+Vector2 Vector2::Origin = Vector2();
+
 /*Default constructor*/
 Vector2::Vector2()
 {
@@ -10,18 +12,18 @@ Vector2::Vector2()
 }
 
 /*Parameterized constructor. Sets the x and y values to the specified ones*/
-Vector2::Vector2(float xVal, float yVal)
+Vector2::Vector2(float xValue, float yValue)
 {
-	x = xVal;
-	y = yVal;
+	x = xValue;
+	y = yValue;
 	length = Length();
 }
 
 /*Parameterized constructor. Sets the x and y values to the same specified value*/
-Vector2::Vector2(float val) 
+Vector2::Vector2(float value) 
 {
-	x = val;
-	y = val;
+	x = value;
+	y = value;
 	length = Length();
 }
 

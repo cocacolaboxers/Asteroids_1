@@ -14,22 +14,22 @@ Vector4::Vector4()
 }
 
 /*Parameterized constructor. Sets the x, y, z and values to the specified ones*/
-Vector4::Vector4(float xVal, float yVal, float zVal, float wVal)
+Vector4::Vector4(float xValue, float yValue, float zValue, float wValue)
 {
-	x = xVal;
-	y = yVal;
-	z = zVal;
-	w = wVal;
+	x = xValue;
+	y = yValue;
+	z = zValue;
+	w = wValue;
 	length = Length();
 }
 
 /*Parameterized constructor. Sets the x, y, z and w values to the same specified value*/
-Vector4::Vector4(float val)
+Vector4::Vector4(float value)
 {
-	x = val;
-	y = val;
-	z = val;
-	w = val;
+	x = value;
+	y = value;
+	z = value;
+	w = value;
 	length = Length();
 }
 

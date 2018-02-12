@@ -16,18 +16,25 @@ public:
 	void Update(void);
 	void Render(void);
 
-	void Move(const Vector2& unit, float, float);
+	void Move(const Vector2& unit);
 	float Warp(float, float, float);
 	void MoveForward(void);
 	void RotateLeft(void);
 	void RotateRight(void);
-
-	/*PUBLIC MEMBERS*/
-	bool thrusterActivated;
+	void DrawShip(void);
+	void DrawThrust(void);
+	void OnWindowResize(float, float);
+	void setThrustingStatus(bool);
 
 private:
 	/*MEMBERS*/
 	Vector2* playerPosition;
+
+	bool isThrusting;
+	float minWindowHeight;
+	float maxWindowHeight;
+	float minWindowWidth;
+	float maxWindowWidth;
 };
 
 #endif // !_PLAYER_H_

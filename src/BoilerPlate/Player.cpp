@@ -3,28 +3,30 @@
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 
+const float initialWindowWidth = 1136.0f;
+const float initialWindowHeight = 640.0f ;
+
 Player::Player()
 {
-	playerPosition = new Vector2();
-	thrusterActivated = false;
+	playerPosition = new Vector2(Vector2::Origin);
+	isThrusting = false;
+
+	minWindowHeight = -initialWindowHeight / 2;
+	maxWindowHeight = -minWindowHeight;
+	minWindowWidth = -initialWindowWidth / 2;
+	maxWindowWidth = -minWindowWidth;
 }
 
 void Player::Update()
 {}
 
-void Player::Move(const Vector2& unit, float windowHeight, float windowWidth) {
-	playerPosition->x += unit.x;
-	playerPosition->y += unit.y;
-	
-	//Calculate max and min height and width
-	float minHeight  = -windowHeight / 2;
-	float maxHeight  = -minHeight;
-	float minWidth   = -windowWidth  / 2;
-	float maxWidth   = -minWidth;
+void Player::Move(const Vector2& positionAddend) {
+	playerPosition->x += positionAddend.x;
+	playerPosition->y += positionAddend.y;
 
 	//Warp
-	playerPosition->x = Warp(playerPosition->x, minWidth, maxWidth);
-	playerPosition->y = Warp(playerPosition->y, minHeight, maxHeight);
+	playerPosition->x = Warp(playerPosition->x, minWindowWidth, maxWindowWidth);
+	playerPosition->y = Warp(playerPosition->y, minWindowHeight, maxWindowHeight);
 }
 
 float Player::Warp(float coordinate, float min, float max)
@@ -32,6 +34,14 @@ float Player::Warp(float coordinate, float min, float max)
 	if (coordinate < min) return max - (min - coordinate);
 	if (coordinate > max) return min + (coordinate - max);
 	return coordinate;
+}
+
+void Player::OnWindowResize(float newWindowHeight, float newWindowWidth)
+{
+	minWindowHeight = -newWindowHeight / 2;
+	maxWindowHeight = -minWindowHeight;
+	minWindowWidth = -newWindowWidth / 2;
+	maxWindowWidth = -minWindowWidth;
 }
 
 void Player::MoveForward()
@@ -43,23 +53,25 @@ void Player::RotateLeft()
 void Player::RotateRight()
 {}
 
-void Player::Render()
+void Player::DrawShip()
 {
-	glLoadIdentity();
-	glTranslatef(playerPosition->x, playerPosition->y, 0.0f);
-	
-	//Draw ship
 	glBegin(GL_LINE_LOOP);
 	glVertex2f(0.0, 20.0);
 	glVertex2f(12.0, -10.0);
 	glVertex2f(6.0, -4.0);
 	glVertex2f(-6.0, -4.0);
 	glVertex2f(-12.0, -10.0);
-
 	glEnd();
+}
 
-	//Draw thrust 
-	if (thrusterActivated)
+void Player::setThrustingStatus(bool status)
+{
+	isThrusting = status;
+}
+
+void Player::DrawThrust()
+{
+	if (isThrusting)
 	{
 		glBegin(GL_LINE_LOOP);
 		glVertex2f(6.0, -4.0);
@@ -67,4 +79,16 @@ void Player::Render()
 		glVertex2f(0.0, -14.0);
 		glEnd();
 	}
+}
+
+void Player::Render()
+{
+	glLoadIdentity();
+	glTranslatef(playerPosition->x, playerPosition->y, 0.0f);
+	
+	//Draw ship
+	DrawShip();
+
+	//Draw thrust 
+	DrawThrust();
 }

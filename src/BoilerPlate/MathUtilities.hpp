@@ -14,10 +14,10 @@ public:
 	template<class T>
 	T maxValue(T x, T y) //The informally called base case; the maximum between two numbers
 	{
-		T maxVal = x;
-		if (y > maxVal)
-			maxVal = y;
-		return maxVal;
+		T maxValue = x;
+		if (y > maxValue)
+			maxValue = y;
+		return maxValue;
 	}
 
 	template<class T, class... fArguments>
@@ -30,10 +30,10 @@ public:
 	template<class T>
 	T minValue(T x, T y) //The informally called base case; the minimum between two numbers
 	{
-		T minVal = x;
-		if (y < minVal)
-			minVal = y;
-		return minVal;
+		T minValue = x;
+		if (y < minValue)
+			minValue = y;
+		return minValue;
 	}
 
 	template<class T, class... fArguments>
