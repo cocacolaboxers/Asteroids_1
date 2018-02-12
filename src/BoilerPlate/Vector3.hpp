@@ -2,6 +2,7 @@
 #ifndef _Vector3_H_
 #define _Vector3_H_
 
+struct Vector2;
 struct Vector3
 {
 	/*STATIC*/
@@ -17,6 +18,7 @@ struct Vector3
 	Vector3();
 	Vector3(float, float, float);
 	Vector3(float);
+	Vector3(const Vector2&);
 
 	/*PUBLIC FUNCTIONS*/
 	float Length() const;

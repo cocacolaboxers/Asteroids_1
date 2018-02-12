@@ -3,45 +3,92 @@
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 
+const float initialWindowWidth = 1136.0f;
+const float initialWindowHeight = 640.0f ;
+
 Player::Player()
 {
-	position = Vector2();
+	playerPosition = new Vector2(Vector2::Origin);
+	isThrusting = false;
+
+	minWindowHeight = -initialWindowHeight / 2;
+	maxWindowHeight = -minWindowHeight;
+	minWindowWidth = -initialWindowWidth / 2;
+	maxWindowWidth = -minWindowWidth;
 }
 
-void Player::Update(SDL_KeyboardEvent keyBoardEvent)
+void Player::Update()
+{}
+
+void Player::Move(const Vector2& positionAddend) {
+	playerPosition->x += positionAddend.x;
+	playerPosition->y += positionAddend.y;
+
+	//Warp
+	playerPosition->x = Warp(playerPosition->x, minWindowWidth, maxWindowWidth);
+	playerPosition->y = Warp(playerPosition->y, minWindowHeight, maxWindowHeight);
+}
+
+float Player::Warp(float coordinate, float min, float max)
 {
-	switch (keyBoardEvent.keysym.scancode)
+	if (coordinate < min) return max - (min - coordinate);
+	if (coordinate > max) return min + (coordinate - max);
+	return coordinate;
+}
+
+void Player::OnWindowResize(float newWindowHeight, float newWindowWidth)
+{
+	minWindowHeight = -newWindowHeight / 2;
+	maxWindowHeight = -minWindowHeight;
+	minWindowWidth = -newWindowWidth / 2;
+	maxWindowWidth = -minWindowWidth;
+}
+
+void Player::MoveForward()
+{}
+
+void Player::RotateLeft()
+{}
+
+void Player::RotateRight()
+{}
+
+void Player::DrawShip()
+{
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(0.0, 20.0);
+	glVertex2f(12.0, -10.0);
+	glVertex2f(6.0, -4.0);
+	glVertex2f(-6.0, -4.0);
+	glVertex2f(-12.0, -10.0);
+	glEnd();
+}
+
+void Player::setThrustingStatus(bool status)
+{
+	isThrusting = status;
+}
+
+void Player::DrawThrust()
+{
+	if (isThrusting)
 	{
-	case SDL_SCANCODE_DOWN:
-		position.y--;
-		break;
-
-	case SDL_SCANCODE_UP:
-		position.y++;
-		break;
-
-	case SDL_SCANCODE_LEFT:
-		position.x--;
-		break;
-
-	case SDL_SCANCODE_RIGHT:
-		position.x++;
-		break;
-	default:
-		SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
-		break;
+		glBegin(GL_LINE_LOOP);
+		glVertex2f(6.0, -4.0);
+		glVertex2f(-6.0, -4.0);
+		glVertex2f(0.0, -14.0);
+		glEnd();
 	}
 }
 
 void Player::Render()
 {
 	glLoadIdentity();
-	glTranslatef(position.x, position.y, 0.0f);
+	glTranslatef(playerPosition->x, playerPosition->y, 0.0f);
 	
-	//Draw triangle
-	glBegin(GL_LINE_LOOP);
-	glVertex2f(0.0 + position.x, 50.0 + position.y);
-	glVertex2f(50.0 + position.x, -50.0 + position.y);
-	glVertex2f(-50.0 + position.x, -50.0 + position.y);
-	glEnd();
+	//Draw ship
+	DrawShip();
+
+	//Draw thrust 
+	DrawThrust();
 }

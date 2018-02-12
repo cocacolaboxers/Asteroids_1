@@ -1,4 +1,4 @@
-#include "ColorPalette.h"
+#include "ColorPalette.hpp"
 
 ColorPalette::ColorPalette()
 {
