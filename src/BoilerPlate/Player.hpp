@@ -4,7 +4,7 @@
 
 #include "Vector2.hpp"
 #include "SDLEvent.hpp"
-
+#include "MathUtilities.hpp"
 
 class Player
 {
@@ -16,7 +16,6 @@ public:
 	void Update(void);
 	void Render(void);
 
-	void Move(const Vector2& unit);
 	float Warp(float, float, float);
 	void MoveForward(void);
 	void RotateLeft(void);
@@ -29,6 +28,8 @@ public:
 private:
 	/*MEMBERS*/
 	Vector2* playerPosition;
+	float playerOrientation;
+	float mass;
 
 	bool isThrusting;
 	float minWindowHeight;

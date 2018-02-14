@@ -10,6 +10,7 @@ Player::Player()
 {
 	playerPosition = new Vector2(Vector2::Origin);
 	isThrusting = false;
+	playerOrientation = 0.0f;
 
 	minWindowHeight = -initialWindowHeight / 2;
 	maxWindowHeight = -minWindowHeight;
@@ -19,15 +20,6 @@ Player::Player()
 
 void Player::Update()
 {}
-
-void Player::Move(const Vector2& positionAddend) {
-	playerPosition->x += positionAddend.x;
-	playerPosition->y += positionAddend.y;
-
-	//Warp
-	playerPosition->x = Warp(playerPosition->x, minWindowWidth, maxWindowWidth);
-	playerPosition->y = Warp(playerPosition->y, minWindowHeight, maxWindowHeight);
-}
 
 float Player::Warp(float coordinate, float min, float max)
 {
@@ -45,13 +37,25 @@ void Player::OnWindowResize(float newWindowHeight, float newWindowWidth)
 }
 
 void Player::MoveForward()
-{}
+{
+	MathUtilities utility;
+
+	playerPosition->x -= 10 * sinf(utility.toRadians(playerOrientation));
+	playerPosition->y += 10 * cosf(utility.toRadians(playerOrientation));
+
+	playerPosition->x = Warp(playerPosition->x, minWindowWidth, maxWindowWidth);
+	playerPosition->y = Warp(playerPosition->y, minWindowHeight, maxWindowHeight);
+}
 
 void Player::RotateLeft()
-{}
+{
+	playerOrientation += 10;
+}
 
 void Player::RotateRight()
-{}
+{
+	playerOrientation -= 10;
+}
 
 void Player::DrawShip()
 {
@@ -85,6 +89,7 @@ void Player::Render()
 {
 	glLoadIdentity();
 	glTranslatef(playerPosition->x, playerPosition->y, 0.0f);
+	glRotatef(playerOrientation, 0.0f, 0.0f, 1.0f);
 	
 	//Draw ship
 	DrawShip();

@@ -1,14 +1,15 @@
 #pragma once
 #include <cmath>
 
-const double pi = 3.1415926535897;
-
 class MathUtilities
 {
 public:
 	MathUtilities();
 	int getNearestInt(float x);
 	int getNearestEvenInt(float x);
+
+	//Const member
+	const float pi = 3.14159265;
 
 	//Returns the maximum of any two, three or four values. Uses variadic templates/function templates http://www.cplusplus.com/articles/EhvU7k9E/
 	template<class T>

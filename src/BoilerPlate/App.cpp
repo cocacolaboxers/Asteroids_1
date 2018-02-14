@@ -85,25 +85,20 @@ namespace Engine
 	{
 		switch (keyBoardEvent.keysym.scancode)
 		{
-		case SDL_SCANCODE_DOWN:
-			SDL_Log("Down key was pressed.");
-			player1->Move(Vector2(0.0f, -desiredMovingRate));
-			break;
-
 		case SDL_SCANCODE_UP:
 			SDL_Log("Up key was pressed.");
-			player1->Move(Vector2(0.0f, desiredMovingRate));
+			player1->MoveForward();
 			player1->setThrustingStatus(true);
 			break;
 
 		case SDL_SCANCODE_LEFT:
 			SDL_Log("Left key was pressed.");
-			player1->Move(Vector2(-desiredMovingRate, 0.0f));
+			player1->RotateLeft();
 			break;
 
 		case SDL_SCANCODE_RIGHT:
 			SDL_Log("Right key was pressed.");
-			player1->Move(Vector2(desiredMovingRate, 0.0f));
+			player1->RotateRight();
 			break;
 		default:
 			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
