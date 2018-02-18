@@ -15,8 +15,7 @@
 #include "ColorPalette.hpp"
 #include "MathUtilities.hpp"
 #include "Player.hpp"
-
-//const float desiredMovingRate = 12.0f; // 12:1
+#include "Asteroid.hpp"
 
 namespace Engine
 {
@@ -75,6 +74,7 @@ namespace Engine
 		GameState::State					m_state;
 		Engine::TimeManager*				m_timer;
 		Player*								player1;
+		Asteroid	*							asteroid1;
 
 	};
 }

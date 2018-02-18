@@ -1,10 +1,10 @@
 #include "Player.hpp"
-// OpenGL includes
-#include <GL/glew.h>
-#include <SDL2/SDL_opengl.h>
 
-const float initialWindowWidth = 1136.0f;
-const float initialWindowHeight = 640.0f ;
+const float INITIAL_WINDOW_WIDTH = 1136.0f;
+const float INITIAL_WINDOW_HEIGHT = 640.0f ;
+const float MOVING_SPEED = 10.0f;
+const float ROTATION_SPEED = 10.0f; 
+MathUtilities utility;
 
 Player::Player()
 {
@@ -12,10 +12,29 @@ Player::Player()
 	isThrusting = false;
 	playerOrientation = 0.0f;
 
-	minWindowHeight = -initialWindowHeight / 2;
+	minWindowHeight = -INITIAL_WINDOW_HEIGHT / 2;
 	maxWindowHeight = -minWindowHeight;
-	minWindowWidth = -initialWindowWidth / 2;
+	minWindowWidth = -INITIAL_WINDOW_WIDTH / 2;
 	maxWindowWidth = -minWindowWidth;
+
+	ArrangeShipPoints();
+	ArrangeThrusterPoints();
+}
+
+void Player::ArrangeShipPoints()
+{
+	shipPoints.push_back(Vector2(0.0f, 20.0f));
+	shipPoints.push_back(Vector2(12.0f, -10.0f));
+	shipPoints.push_back(Vector2(6.0f, -4.0f));
+	shipPoints.push_back(Vector2(-6.0f, -4.0f));
+	shipPoints.push_back(Vector2(-12.0f, -10.0f));
+}
+
+void Player::ArrangeThrusterPoints()
+{
+	thrusterPoints.push_back(Vector2(6.0f, -4.0f));
+	thrusterPoints.push_back(Vector2(-6.0f, -4.0f));
+	thrusterPoints.push_back(Vector2(0.0f, -14.0f));
 }
 
 void Player::Update()
@@ -38,10 +57,8 @@ void Player::OnWindowResize(float newWindowHeight, float newWindowWidth)
 
 void Player::MoveForward()
 {
-	MathUtilities utility;
-
-	playerPosition->x -= 10 * sinf(utility.toRadians(playerOrientation));
-	playerPosition->y += 10 * cosf(utility.toRadians(playerOrientation));
+	playerPosition->x -= MOVING_SPEED * sinf(utility.toRadians(playerOrientation));
+	playerPosition->y += MOVING_SPEED * cosf(utility.toRadians(playerOrientation));
 
 	playerPosition->x = Warp(playerPosition->x, minWindowWidth, maxWindowWidth);
 	playerPosition->y = Warp(playerPosition->y, minWindowHeight, maxWindowHeight);
@@ -49,28 +66,24 @@ void Player::MoveForward()
 
 void Player::RotateLeft()
 {
-	playerOrientation += 10;
+	playerOrientation += ROTATION_SPEED;
 }
 
 void Player::RotateRight()
 {
-	playerOrientation -= 10;
+	playerOrientation -= ROTATION_SPEED;
 }
 
 void Player::DrawShip()
 {
 	glBegin(GL_LINE_LOOP);
-	glVertex2f(0.0, 20.0);
-	glVertex2f(12.0, -10.0);
-	glVertex2f(6.0, -4.0);
-	glVertex2f(-6.0, -4.0);
-	glVertex2f(-12.0, -10.0);
-	glEnd();
-}
+	for(std::vector<Vector2>::iterator it = shipPoints.begin(); 
+		it != shipPoints.end(); it++)
+	{
+		glVertex2f((*it).x, (*it).y);
+	}
 
-void Player::setThrustingStatus(bool status)
-{
-	isThrusting = status;
+	glEnd();
 }
 
 void Player::DrawThrust()
@@ -78,11 +91,19 @@ void Player::DrawThrust()
 	if (isThrusting)
 	{
 		glBegin(GL_LINE_LOOP);
-		glVertex2f(6.0, -4.0);
-		glVertex2f(-6.0, -4.0);
-		glVertex2f(0.0, -14.0);
+		for (std::vector<Vector2>::iterator it = thrusterPoints.begin();
+			it != thrusterPoints.end(); it++)
+		{
+			glVertex2f((*it).x, (*it).y);
+		}
+
 		glEnd();
 	}
+}
+
+void Player::SetThrustingStatus(bool status)
+{
+	isThrusting = status;
 }
 
 void Player::Render()

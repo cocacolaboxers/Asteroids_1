@@ -22,6 +22,7 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		player1 = new Player();
+		asteroid1 = new Asteroid(Asteroid::Size::BIG);
 	}
 
 	App::~App()
@@ -88,7 +89,7 @@ namespace Engine
 		case SDL_SCANCODE_UP:
 			SDL_Log("Up key was pressed.");
 			player1->MoveForward();
-			player1->setThrustingStatus(true);
+			player1->SetThrustingStatus(true);
 			break;
 
 		case SDL_SCANCODE_LEFT:
@@ -115,7 +116,7 @@ namespace Engine
 			break;
 
 		case SDL_SCANCODE_UP:
-			player1->setThrustingStatus(false);
+			player1->SetThrustingStatus(false);
 			break;
 		default:
 			//DO NOTHING
@@ -156,6 +157,7 @@ namespace Engine
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		player1->Render();
+		asteroid1->Render();
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}
