@@ -22,7 +22,7 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		player1 = new Player();
-		asteroid1 = new Asteroid(Asteroid::Size::BIG);
+		asteroid1 = new Asteroid(Asteroid::Size::SMALL);
 	}
 
 	App::~App()

@@ -5,7 +5,7 @@
 
 #include "Entity.hpp"
 
-class Asteroid
+class Asteroid : public Entity
 {
 public:
 	/*ENUMERATED TYPE*/
@@ -19,18 +19,15 @@ public:
 	Asteroid(Size);
 
 	/*PUBLIC FUNCTIONS*/
-	void Update(void);
-	void Render(void);
+	void Render(void) override;
+	void ArrangeEntityPoints(void) override;
+	void Update(void) override;
+
 	Size GetSize(void);
-	void DrawAsteroid(void);
-	void ArrangeAsteroidPoints(void);
 
 private:
 	/*PRIVATE MEMBERS*/
-	Vector2 asteroidPosition;
 	Size asteroidSize;
-	float asteroidOrientation;
-	std::vector<Vector2> asteroidPoints;
 };
 
 #endif // !_ASTEROID_H_

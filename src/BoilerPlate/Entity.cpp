@@ -34,7 +34,22 @@ void Entity::OnWindowResize(float newWindowHeight, float newWindowWidth)
 	maxWindowWidth = -minWindowWidth;
 }
 
+void Entity::ArrangeEntityPoints(void)
+{
+
+}
+
 void Entity::Update()
+{
+
+}
+
+void Entity::Render(void)
+{
+
+}
+
+void Entity::MoveForward(void)
 {
 
 }

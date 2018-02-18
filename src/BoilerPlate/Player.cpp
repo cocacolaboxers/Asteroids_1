@@ -8,26 +8,19 @@ MathUtilities utility;
 
 Player::Player()
 {
-	playerPosition = new Vector2(Vector2::Origin);
 	isThrusting = false;
-	playerOrientation = 0.0f;
 
-	minWindowHeight = -INITIAL_WINDOW_HEIGHT / 2;
-	maxWindowHeight = -minWindowHeight;
-	minWindowWidth = -INITIAL_WINDOW_WIDTH / 2;
-	maxWindowWidth = -minWindowWidth;
-
-	ArrangeShipPoints();
+	ArrangeEntityPoints();
 	ArrangeThrusterPoints();
 }
 
-void Player::ArrangeShipPoints()
+void Player::ArrangeEntityPoints()
 {
-	shipPoints.push_back(Vector2(0.0f, 20.0f));
-	shipPoints.push_back(Vector2(12.0f, -10.0f));
-	shipPoints.push_back(Vector2(6.0f, -4.0f));
-	shipPoints.push_back(Vector2(-6.0f, -4.0f));
-	shipPoints.push_back(Vector2(-12.0f, -10.0f));
+	entityPoints.push_back(Vector2(0.0f, 20.0f));
+	entityPoints.push_back(Vector2(12.0f, -10.0f));
+	entityPoints.push_back(Vector2(6.0f, -4.0f));
+	entityPoints.push_back(Vector2(-6.0f, -4.0f));
+	entityPoints.push_back(Vector2(-12.0f, -10.0f));
 }
 
 void Player::ArrangeThrusterPoints()
@@ -40,50 +33,23 @@ void Player::ArrangeThrusterPoints()
 void Player::Update()
 {}
 
-float Player::Warp(float coordinate, float min, float max)
-{
-	if (coordinate < min) return max - (min - coordinate);
-	if (coordinate > max) return min + (coordinate - max);
-	return coordinate;
-}
-
-void Player::OnWindowResize(float newWindowHeight, float newWindowWidth)
-{
-	minWindowHeight = -newWindowHeight / 2;
-	maxWindowHeight = -minWindowHeight;
-	minWindowWidth = -newWindowWidth / 2;
-	maxWindowWidth = -minWindowWidth;
-}
-
 void Player::MoveForward()
 {
-	playerPosition->x -= MOVING_SPEED * sinf(utility.toRadians(playerOrientation));
-	playerPosition->y += MOVING_SPEED * cosf(utility.toRadians(playerOrientation));
+	entityPosition->x -= MOVING_SPEED * sinf(utility.toRadians(entityOrientation));
+	entityPosition->y += MOVING_SPEED * cosf(utility.toRadians(entityOrientation));
 
-	playerPosition->x = Warp(playerPosition->x, minWindowWidth, maxWindowWidth);
-	playerPosition->y = Warp(playerPosition->y, minWindowHeight, maxWindowHeight);
+	entityPosition->x = Warp(entityPosition->x, minWindowWidth, maxWindowWidth);
+	entityPosition->y = Warp(entityPosition->y, minWindowHeight, maxWindowHeight);
 }
 
 void Player::RotateLeft()
 {
-	playerOrientation += ROTATION_SPEED;
+	entityOrientation += ROTATION_SPEED;
 }
 
 void Player::RotateRight()
 {
-	playerOrientation -= ROTATION_SPEED;
-}
-
-void Player::DrawShip()
-{
-	glBegin(GL_LINE_LOOP);
-	for(std::vector<Vector2>::iterator it = shipPoints.begin(); 
-		it != shipPoints.end(); it++)
-	{
-		glVertex2f((*it).x, (*it).y);
-	}
-
-	glEnd();
+	entityOrientation -= ROTATION_SPEED;
 }
 
 void Player::DrawThrust()
@@ -109,11 +75,11 @@ void Player::SetThrustingStatus(bool status)
 void Player::Render()
 {
 	glLoadIdentity();
-	glTranslatef(playerPosition->x, playerPosition->y, 0.0f);
-	glRotatef(playerOrientation, 0.0f, 0.0f, 1.0f);
+	glTranslatef(entityPosition->x, entityPosition->y, 0.0f);
+	glRotatef(entityOrientation, 0.0f, 0.0f, 1.0f);
 	
 	//Draw ship
-	DrawShip();
+	DrawEntity();
 
 	//Draw thrust 
 	DrawThrust();

@@ -19,14 +19,14 @@ public:
 
 	/*PUBLIC FUNCTIONS*/
 	virtual void Update(void);
-	virtual void Render(void) = 0;
-	virtual void MoveForward(void) = 0;
+	virtual void Render(void);
+	virtual void MoveForward(void);
 	void DrawEntity(void);
 	void OnWindowResize(float, float);
-	virtual void ArrangeEntityPoints(void) = 0;
+	virtual void ArrangeEntityPoints(void);
 	float Warp(float, float, float);
 
-private:
+protected:
 	/*PRIVATE MEMBERS*/
 	Vector2 * entityPosition;
 	float entityOrientation;
