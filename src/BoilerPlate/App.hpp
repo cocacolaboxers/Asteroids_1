@@ -16,7 +16,7 @@
 #include "MathUtilities.hpp"
 #include "Player.hpp"
 
-const float desiredMovingRate = 12.0f; // 12:1
+//const float desiredMovingRate = 12.0f; // 12:1
 
 namespace Engine
 {

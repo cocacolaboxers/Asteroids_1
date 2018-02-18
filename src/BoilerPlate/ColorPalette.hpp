@@ -10,6 +10,7 @@ public:
 	Color cyan;
 	Color gray;
 	Color orange;
+	Color navy;
 
 	ColorPalette();
 	~ColorPalette();

@@ -150,8 +150,8 @@ namespace Engine
 	{
 		ColorPalette colorPalette;
 
-		glClearColor(colorPalette.orange.redValue, colorPalette.orange.greenValue,
-			colorPalette.orange.blueValue, colorPalette.orange.alphaValue);
+		glClearColor(colorPalette.navy.redValue, colorPalette.navy.greenValue,
+			colorPalette.navy.blueValue, colorPalette.navy.alphaValue);
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
