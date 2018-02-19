@@ -56,9 +56,9 @@ void Player::DrawThrust()
 {
 	if (isThrusting)
 	{
+		std::vector<Vector2>::iterator it = thrusterPoints.begin();
 		glBegin(GL_LINE_LOOP);
-		for (std::vector<Vector2>::iterator it = thrusterPoints.begin();
-			it != thrusterPoints.end(); it++)
+		for (; it != thrusterPoints.end(); it++)
 		{
 			glVertex2f((*it).x, (*it).y);
 		}
