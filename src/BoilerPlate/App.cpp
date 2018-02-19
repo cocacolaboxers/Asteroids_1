@@ -21,15 +21,15 @@ namespace Engine
 	{
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
-		player1 = new Player();
-		asteroid1 = new Asteroid(Asteroid::Size::SMALL);
+		m_player = new Player();
+		m_asteroid = new Asteroid(Asteroid::Size::SMALL);
 	}
 
 	App::~App()
 	{
-		if (player1) 
+		if (m_player) 
 		{
-			delete player1;
+			delete m_player;
 		}
 		CleanupSDL();
 	}
@@ -88,18 +88,18 @@ namespace Engine
 		{
 		case SDL_SCANCODE_UP:
 			SDL_Log("Up key was pressed.");
-			player1->MoveForward();
-			player1->SetThrustingStatus(true);
+			m_player->MoveForward();
+			m_player->SetThrustingStatus(true);
 			break;
 
 		case SDL_SCANCODE_LEFT:
 			SDL_Log("Left key was pressed.");
-			player1->RotateLeft();
+			m_player->RotateLeft();
 			break;
 
 		case SDL_SCANCODE_RIGHT:
 			SDL_Log("Right key was pressed.");
-			player1->RotateRight();
+			m_player->RotateRight();
 			break;
 		default:
 			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
@@ -116,7 +116,7 @@ namespace Engine
 			break;
 
 		case SDL_SCANCODE_UP:
-			player1->SetThrustingStatus(false);
+			m_player->SetThrustingStatus(false);
 			break;
 		default:
 			//DO NOTHING
@@ -151,13 +151,13 @@ namespace Engine
 	{
 		ColorPalette colorPalette;
 
-		glClearColor(colorPalette.navy.redValue, colorPalette.navy.greenValue,
-			colorPalette.navy.blueValue, colorPalette.navy.alphaValue);
+		glClearColor(colorPalette.NAVY.redValue, colorPalette.NAVY.greenValue,
+			colorPalette.NAVY.blueValue, colorPalette.NAVY.alphaValue);
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		player1->Render();
-		asteroid1->Render();
+		m_player->Render();
+		m_asteroid->Render();
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}
@@ -260,7 +260,7 @@ namespace Engine
 
 		SetupViewport();
 
-		player1->OnWindowResize(m_height, m_width);
+		m_player->OnWindowResize(m_height, m_width);
 	}
 
 	void App::OnExit()

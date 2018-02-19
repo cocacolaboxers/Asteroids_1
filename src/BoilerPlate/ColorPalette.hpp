@@ -5,12 +5,12 @@
 class ColorPalette
 {
 public:
-	Color red;
-	Color yellow;
-	Color cyan;
-	Color gray;
-	Color orange;
-	Color navy;
+	Color RED;
+	Color YELLOW;
+	Color CYAN;
+	Color GRAY;
+	Color ORANGE;
+	Color NAVY;
 
 	ColorPalette();
 	~ColorPalette();

@@ -16,9 +16,10 @@ Entity::Entity()
 
 void Entity::DrawEntity()
 {
+	std::vector<Vector2>::iterator it = entityPoints.begin();
+
 	glBegin(GL_LINE_LOOP);
-	for (std::vector<Vector2>::iterator it = entityPoints.begin();
-		it != entityPoints.end(); it++)
+	for (; it != entityPoints.end(); it++)
 	{
 		glVertex2f((*it).x, (*it).y);
 	}

@@ -27,7 +27,7 @@ public:
 
 private:
 	/*PRIVATE MEMBERS*/
-	Size asteroidSize;
+	Size m_asteroid_size;
 };
 
 #endif // !_ASTEROID_H_

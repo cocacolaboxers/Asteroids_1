@@ -73,8 +73,8 @@ namespace Engine
 		SDL_GLContext						m_context;
 		GameState::State					m_state;
 		Engine::TimeManager*				m_timer;
-		Player*								player1;
-		Asteroid	*							asteroid1;
+		Player*								m_player;
+		Asteroid	*							m_asteroid;
 
 	};
 }
