@@ -1,14 +1,15 @@
 #pragma once
 #include <cmath>
 
-const double pi = 3.1415926535897;
-
 class MathUtilities
 {
 public:
 	MathUtilities();
 	int getNearestInt(float x);
 	int getNearestEvenInt(float x);
+
+	//Constant member
+	const float PI = 3.141592;
 
 	//Returns the maximum of any two, three or four values. Uses variadic templates/function templates http://www.cplusplus.com/articles/EhvU7k9E/
 	template<class T>
@@ -55,16 +56,16 @@ public:
 
 	//Converts an angle in degrees to radians
 	template<class T>
-	double toRadians(T angle)
+	float toRadians(T angle)
 	{
-		return angle * (pi / 180);
+		return angle * (PI / 180);
 	}
 
 	//Converts an angle in radians to degrees
 	template<class T>
-	double toDegrees(T angle)
+	float toDegrees(T angle)
 	{
-		return angle * (180 / pi);
+		return angle * (180 / PI);
 	}
 
 	//Calculates angular distance from angle A to angle B
