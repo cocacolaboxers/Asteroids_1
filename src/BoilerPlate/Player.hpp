@@ -11,7 +11,7 @@ public:
 	Player();
 
 	/*PUBLIC FUNCTIONS*/
-	void Update(void) override;
+	void Update(float) override;
 	void Render(void) override;
 
 	void MoveForward(void) override;
@@ -21,6 +21,7 @@ public:
 	void SetThrustingStatus(bool);
 	void ArrangeEntityPoints(void) override;
 	void ArrangeThrusterPoints(void);
+	void ApplyImpulse(Vector2 impulse);
 
 private:
 	/*MEMBERS*/

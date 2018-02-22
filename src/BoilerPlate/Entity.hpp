@@ -18,7 +18,7 @@ public:
 	Entity();
 
 	/*PUBLIC FUNCTIONS*/
-	virtual void Update(void);
+	virtual void Update(float);
 	virtual void Render(void);
 	virtual void MoveForward(void);
 	void DrawEntity(void);
@@ -28,7 +28,8 @@ public:
 
 protected:
 	/*PRIVATE MEMBERS*/
-	Vector2 * entityPosition;
+	Vector2 entityPosition;
+	Vector2 entityVelocity;
 	float entityOrientation;
 	float entityMass;
 
@@ -38,7 +39,6 @@ protected:
 	float maxWindowWidth;
 
 	std::vector<Vector2> entityPoints;
-
 };
 
 #endif // !_ENTITY_H_

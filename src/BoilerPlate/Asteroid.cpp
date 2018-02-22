@@ -63,7 +63,7 @@ void Asteroid::ArrangeEntityPoints()
 	}
 }
 
-void Asteroid::Update(void)
+void Asteroid::Update(float deltaTime)
 {
 }
 
@@ -75,7 +75,7 @@ Asteroid::Size Asteroid::GetSize()
 void Asteroid::Render()
 {
 	glLoadIdentity();
-	glTranslatef(entityPosition->x, entityPosition->y, 0.0f);
+	glTranslatef(entityPosition.x, entityPosition.y, 0.0f);
 	glRotatef(entityOrientation, 0.0f, 0.0f, 1.0f);
 
 	//Draw Asteroid

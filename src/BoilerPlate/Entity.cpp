@@ -5,7 +5,7 @@ const float INITIAL_WINDOW_HEIGHT = 640.0f;
 
 Entity::Entity()
 {
-	entityPosition = new Vector2(Vector2::Origin);
+	entityPosition = Vector2(Vector2::Origin);
 	entityOrientation = 0.0f;
 
 	minWindowHeight = -INITIAL_WINDOW_HEIGHT / 2;
@@ -40,9 +40,13 @@ void Entity::ArrangeEntityPoints(void)
 
 }
 
-void Entity::Update()
+void Entity::Update(float deltaTime)
 {
+	entityPosition.x += entityVelocity.x * static_cast<float> (deltaTime); // displacement = velocity * time
+	entityPosition.y += entityVelocity.y * static_cast<float> (deltaTime);
 
+	entityPosition.x = Warp(entityPosition.x, minWindowWidth, maxWindowWidth);
+	entityPosition.y = Warp(entityPosition.y, minWindowHeight, maxWindowHeight);
 }
 
 void Entity::Render(void)

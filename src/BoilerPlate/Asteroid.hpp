@@ -21,7 +21,7 @@ public:
 	/*PUBLIC FUNCTIONS*/
 	void Render(void) override;
 	void ArrangeEntityPoints(void) override;
-	void Update(void) override;
+	void Update(float) override;
 
 	Size GetSize(void);
 
