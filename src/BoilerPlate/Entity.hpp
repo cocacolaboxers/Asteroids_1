@@ -25,6 +25,7 @@ public:
 	void OnWindowResize(float, float);
 	virtual void ArrangeEntityPoints(void);
 	float Warp(float, float, float);
+	void ApplyImpulse(Vector2 impulse);
 
 protected:
 	/*PRIVATE MEMBERS*/

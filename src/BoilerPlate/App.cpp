@@ -131,7 +131,7 @@ namespace Engine
 		// Update code goes here
 		//
 		m_player->Update(DESIRED_FRAME_TIME);
-
+		m_asteroid->Update(DESIRED_FRAME_TIME);
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
 

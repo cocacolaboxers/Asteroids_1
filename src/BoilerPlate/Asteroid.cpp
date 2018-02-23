@@ -7,6 +7,7 @@ Asteroid::Asteroid(Size size)
 {
 	m_asteroid_size = size;
 	ArrangeEntityPoints();
+	ApplyImpulse(Vector2(10, 10));
 }
 
 void Asteroid::ArrangeEntityPoints()
@@ -65,6 +66,8 @@ void Asteroid::ArrangeEntityPoints()
 
 void Asteroid::Update(float deltaTime)
 {
+	//
+	Entity::Update(deltaTime);
 }
 
 Asteroid::Size Asteroid::GetSize()

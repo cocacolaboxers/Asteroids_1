@@ -21,12 +21,12 @@ public:
 	void SetThrustingStatus(bool);
 	void ArrangeEntityPoints(void) override;
 	void ArrangeThrusterPoints(void);
-	void ApplyImpulse(Vector2 impulse);
 
 private:
 	/*MEMBERS*/
-	bool isThrusting;
-	std::vector<Vector2> thrusterPoints;
+	bool m_isThrusting;
+	std::vector<Vector2> m_thrusterPoints;
+	float m_playerCurrentSpeed;
 };
 
 #endif // !_PLAYER_H_

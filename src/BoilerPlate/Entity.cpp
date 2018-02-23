@@ -2,11 +2,13 @@
 
 const float INITIAL_WINDOW_WIDTH = 1136.0f;
 const float INITIAL_WINDOW_HEIGHT = 640.0f;
+MathUtilities utility;
 
 Entity::Entity()
 {
 	entityPosition = Vector2(Vector2::Origin);
 	entityOrientation = 0.0f;
+	entityMass = 1.0f;
 
 	minWindowHeight = -INITIAL_WINDOW_HEIGHT / 2;
 	maxWindowHeight = -minWindowHeight;
@@ -64,4 +66,13 @@ float Entity::Warp(float coordinate, float min, float max)
 	if (coordinate < min) return max - (min - coordinate);
 	if (coordinate > max) return min + (coordinate - max);
 	return coordinate;
+}
+
+void Entity::ApplyImpulse(Vector2 impulse)
+{
+	if (entityMass > 0)
+	{
+		entityVelocity.x -= (impulse.x / entityMass) * sinf(utility.toRadians(entityOrientation));
+		entityVelocity.y += (impulse.y / entityMass) * cosf(utility.toRadians(entityOrientation));
+	}
 }

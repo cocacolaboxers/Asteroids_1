@@ -4,12 +4,11 @@ const float INITIAL_WINDOW_WIDTH = 1136.0f;
 const float INITIAL_WINDOW_HEIGHT = 640.0f ;
 const float MOVING_SPEED = 10.0f;
 const float ROTATION_SPEED = 10.0f; 
-MathUtilities utility;
+const float DESIRED_MAX_SPEED = 200;
 
 Player::Player()
 {
-	isThrusting = false;
-
+	m_isThrusting = false;
 	ArrangeEntityPoints();
 	ArrangeThrusterPoints();
 }
@@ -25,25 +24,28 @@ void Player::ArrangeEntityPoints()
 
 void Player::ArrangeThrusterPoints()
 {
-	thrusterPoints.push_back(Vector2(6.0f, -4.0f));
-	thrusterPoints.push_back(Vector2(-6.0f, -4.0f));
-	thrusterPoints.push_back(Vector2(0.0f, -14.0f));
+	m_thrusterPoints.push_back(Vector2(6.0f, -4.0f));
+	m_thrusterPoints.push_back(Vector2(-6.0f, -4.0f));
+	m_thrusterPoints.push_back(Vector2(0.0f, -14.0f));
 }
 
 void Player::Update(float deltaTime)
 {
+	m_playerCurrentSpeed = std::fabs(entityVelocity.Length());
+	if(m_playerCurrentSpeed > DESIRED_MAX_SPEED)
+	{
+		entityVelocity.x = (entityVelocity.x / m_playerCurrentSpeed) * DESIRED_MAX_SPEED;
+		entityVelocity.y = (entityVelocity.y / m_playerCurrentSpeed) * DESIRED_MAX_SPEED;
+	}
+
 	Entity::Update(deltaTime);
 }
 
 void Player::MoveForward()
 {
-	entityPosition.x -= MOVING_SPEED * sinf(utility.toRadians(entityOrientation));
-	entityPosition.y += MOVING_SPEED * cosf(utility.toRadians(entityOrientation));
-
-	entityPosition.x = Warp(entityPosition.x, minWindowWidth, maxWindowWidth);
-	entityPosition.y = Warp(entityPosition.y, minWindowHeight, maxWindowHeight);
+	ApplyImpulse(Vector2(MOVING_SPEED, MOVING_SPEED));
 }
-
+ 
 void Player::RotateLeft()
 {
 	entityOrientation += ROTATION_SPEED;
@@ -54,22 +56,13 @@ void Player::RotateRight()
 	entityOrientation -= ROTATION_SPEED;
 }
 
-void Player::ApplyImpulse(Vector2 impulse)
-{
-	if (entityMass > 0)
-	{
-		entityVelocity.x += (impulse.x / entityMass) * cosf(utility.toRadians(entityOrientation));
-		entityVelocity.y += (impulse.y / entityMass) * cosf(utility.toRadians(entityOrientation));
-	}
-}
-
 void Player::DrawThrust()
 {
-	if (isThrusting)
+	if (m_isThrusting)
 	{
-		std::vector<Vector2>::iterator it = thrusterPoints.begin();
+		std::vector<Vector2>::iterator it = m_thrusterPoints.begin();
 		glBegin(GL_LINE_LOOP);
-		for (; it != thrusterPoints.end(); it++)
+		for (; it != m_thrusterPoints.end(); it++)
 		{
 			glVertex2f((*it).x, (*it).y);
 		}
@@ -80,7 +73,7 @@ void Player::DrawThrust()
 
 void Player::SetThrustingStatus(bool status)
 {
-	isThrusting = status;
+	m_isThrusting = status;
 }
 
 void Player::Render()
