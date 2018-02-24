@@ -6,13 +6,13 @@ MathUtilities::MathUtilities()
 }
 
 //Returns the value of x rounded downward
-int MathUtilities::getNearestInt(float x)
+int MathUtilities::GetNearestInt(float x)
 {
 	return floorf(x);
 }
 
 //Gets the value of x rounded downward and returns (whatever it returns)
-int MathUtilities::getNearestEvenInt(float x)
+int MathUtilities::GetNearestEvenInt(float x)
 {
 	int roundedX = floorf(x);
 
@@ -23,7 +23,7 @@ int MathUtilities::getNearestEvenInt(float x)
 }
 
 //Determines if an number is a power of two
-bool MathUtilities::isPowerOfTwo(int x)
+bool MathUtilities::IsPowerOfTwo(int x)
 {
 	while ((x % 2 == 0) && x > 1)
 		x /= 2;

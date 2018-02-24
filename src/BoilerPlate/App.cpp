@@ -22,9 +22,9 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroid_amount = 5;
+		m_asteroidCount = 7;
 
-		CreateAsteroid(m_asteroid_amount);
+		CreateAsteroid(m_asteroidCount);
 	}
 
 	App::~App()
@@ -40,25 +40,27 @@ namespace Engine
 	{
 		srand(time(NULL));
 
-		int currentsize;
+		int currentSize;
 		float xCoordinate;
 		float yCoordinate;
 		float orientation;
-		int negnegmothafucka = 1;
+		int signChanger = 1; //Used to ensure asteroids will have their initial position in both positive and negative sides of the screen
 		
 		for (int i = 0; i < amount; i++)
 		{
-			currentsize = rand() % 3;
-			xCoordinate = rand() % 320 * negnegmothafucka;
-			yCoordinate = rand() % 568 * negnegmothafucka; 
-			orientation = rand() % 361;
+			currentSize = rand() % 3;
+			xCoordinate = rand() % 320 + 1 * signChanger;
+			yCoordinate = rand() % 568 + 1 * signChanger; 
+			orientation = rand() % 360 + 1;
 
 
-			m_asteroids.push_back(Asteroid((Asteroid::Size)currentsize, xCoordinate, 
+			m_asteroids.push_back(Asteroid((Asteroid::Size)currentSize, xCoordinate, 
 				yCoordinate, orientation));
 
-			negnegmothafucka *= -1; //MUCHACHO CAMBIA ESO
+			signChanger *= -1;
 		}
+
+		SDL_Log("Current Asteroid count: %i", m_asteroidCount);
 	}
 
 	void App::Execute()
@@ -127,20 +129,28 @@ namespace Engine
 			SDL_Log("Right key was pressed.");
 			m_player->RotateRight();
 			break;
+
 		case SDL_SCANCODE_D:
 			SDL_Log("D key was pressed.");
 			m_player->ShowBoundingCircles(true);
 			break;
+
 		case SDL_SCANCODE_A:
 			SDL_Log("A key was pressed.");
-			m_asteroids.push_back(Asteroid(Asteroid::Size::SMALL, 0, 0, 0));
-			m_asteroid_amount++;
+			CreateAsteroid(1);
+			m_asteroidCount++;
 			break;
+
 		case SDL_SCANCODE_R:
 			SDL_Log("A key was pressed.");
-			m_asteroids.pop_back();
-			m_asteroid_amount--;
+			if (m_asteroidCount > 0) 
+			{
+				m_asteroids.pop_back();
+				m_asteroidCount--;
+			}
+			SDL_Log("Current Asteroid count: %i", m_asteroidCount);
 			break;
+
 		default:
 			SDL_Log("% key was pressed.", keyBoardEvent.keysym.scancode);
 			break;

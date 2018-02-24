@@ -32,20 +32,20 @@ public:
 
 protected:
 	/*PRIVATE MEMBERS*/
-	Vector2 entityPosition;
-	Vector2 entityVelocity;
-	float entityOrientation;
-	float entityMass;
-	MathUtilities utility;
-	float entityRadius;
+	Vector2 m_entityPosition;
+	Vector2 m_entityVelocity;
+	float m_entityOrientation;
+	float m_entityMass;
+	MathUtilities m_utility;
+	float m_entityRadius;
 	bool m_showingCircles;
 
-	float minWindowHeight;
-	float maxWindowHeight;
-	float minWindowWidth;
-	float maxWindowWidth;
+	float m_minWindowHeight;
+	float m_maxWindowHeight;
+	float m_minWindowWidth;
+	float m_maxWindowWidth;
 
-	std::vector<Vector2> entityPoints;
+	std::vector<Vector2> m_entityPoints;
 };
 
 #endif // !_ENTITY_H_

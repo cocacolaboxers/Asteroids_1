@@ -75,12 +75,11 @@ namespace Engine
 		std::string							m_title;
 		SDL_Window*							m_mainWindow;
 		SDL_GLContext						m_context;
-		GameState::State					m_state;
-		Engine::TimeManager*				m_timer;
+		GameState::State						m_state;
+		Engine::TimeManager*					m_timer;
 		Player*								m_player;
-		Asteroid	*							m_asteroid;
 		std::vector<Asteroid>				m_asteroids;
-		int									m_asteroid_amount;
+		int									m_asteroidCount;
 	};
 }
 #endif /* GAME_HPP */

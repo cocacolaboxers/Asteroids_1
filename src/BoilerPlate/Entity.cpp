@@ -5,23 +5,23 @@ const float INITIAL_WINDOW_HEIGHT = 640.0f;
 
 Entity::Entity()
 {
-	entityPosition = Vector2(Vector2::Origin);
-	entityOrientation = 0.0f;
-	entityMass = 1.0f;
+	m_entityPosition = Vector2(Vector2::Origin);
+	m_entityOrientation = 0.0f;
+	m_entityMass = 1.0f;
 	m_showingCircles = false;
 
-	minWindowHeight = -INITIAL_WINDOW_HEIGHT / 2;
-	maxWindowHeight = -minWindowHeight;
-	minWindowWidth = -INITIAL_WINDOW_WIDTH / 2;
-	maxWindowWidth = -minWindowWidth;
+	m_minWindowHeight = -INITIAL_WINDOW_HEIGHT / 2;
+	m_maxWindowHeight = -m_minWindowHeight;
+	m_minWindowWidth = -INITIAL_WINDOW_WIDTH / 2;
+	m_maxWindowWidth = -m_minWindowWidth;
 }
 
 void Entity::DrawEntity()
 {
-	std::vector<Vector2>::iterator it = entityPoints.begin();
+	std::vector<Vector2>::iterator it = m_entityPoints.begin();
 
 	glBegin(GL_LINE_LOOP);
-	for (; it != entityPoints.end(); it++)
+	for (; it != m_entityPoints.end(); it++)
 	{
 		glVertex2f((*it).x, (*it).y);
 	}
@@ -31,10 +31,10 @@ void Entity::DrawEntity()
 
 void Entity::OnWindowResize(float newWindowHeight, float newWindowWidth)
 {
-	minWindowHeight = -newWindowHeight / 2;
-	maxWindowHeight = -minWindowHeight;
-	minWindowWidth = -newWindowWidth / 2;
-	maxWindowWidth = -minWindowWidth;
+	m_minWindowHeight = -newWindowHeight / 2;
+	m_maxWindowHeight = -m_minWindowHeight;
+	m_minWindowWidth = -newWindowWidth / 2;
+	m_maxWindowWidth = -m_minWindowWidth;
 }
 
 void Entity::ArrangeEntityPoints(void)
@@ -44,11 +44,11 @@ void Entity::ArrangeEntityPoints(void)
 
 void Entity::Update(float deltaTime)
 {
-	entityPosition.x += entityVelocity.x * static_cast<float> (deltaTime); // displacement = velocity * time
-	entityPosition.y += entityVelocity.y * static_cast<float> (deltaTime);
+	m_entityPosition.x += m_entityVelocity.x * static_cast<float> (deltaTime); // displacement = velocity * time
+	m_entityPosition.y += m_entityVelocity.y * static_cast<float> (deltaTime);
 
-	entityPosition.x = Warp(entityPosition.x, minWindowWidth, maxWindowWidth);
-	entityPosition.y = Warp(entityPosition.y, minWindowHeight, maxWindowHeight);
+	m_entityPosition.x = Warp(m_entityPosition.x, m_minWindowWidth, m_maxWindowWidth);
+	m_entityPosition.y = Warp(m_entityPosition.y, m_minWindowHeight, m_maxWindowHeight);
 }
 
 void Entity::Render(void)
@@ -65,22 +65,28 @@ float Entity::Warp(float coordinate, float min, float max)
 
 void Entity::ApplyImpulse(Vector2 impulse)
 {
-	if (entityMass > 0)
+	if (m_entityMass > 0)
 	{
-		entityVelocity.x -= (impulse.x / entityMass) * sinf(utility.ToRadians(entityOrientation));
-		entityVelocity.y += (impulse.y / entityMass) * cosf(utility.ToRadians(entityOrientation));
+		m_entityVelocity.x -= (impulse.x / m_entityMass) * sinf(m_utility.ToRadians(m_entityOrientation));
+		m_entityVelocity.y += (impulse.y / m_entityMass) * cosf(m_utility.ToRadians(m_entityOrientation));
 	}
 }
 
 void Entity::DrawBoundingCircle(void)
 {
-	if(m_showingCircles)
-	{ 
+	if (m_showingCircles) 
+	{
+		int lineAmount = 100;
+		float twicePI = 2.0f * m_utility.PI;
+
+		glLoadIdentity();
+
 		glBegin(GL_LINE_LOOP);
-		for (int i = 0; i < 361; i++)
+		for (int i = 0; i <= lineAmount; i++)
 		{
-			glVertex2f(cosf(utility.ToRadians(i))*entityRadius,
-				sinf(utility.ToRadians(i))*entityRadius);
+			glVertex2f(m_entityPosition.x + (m_entityRadius * cos(i *  twicePI / lineAmount)),
+				m_entityPosition.y + (m_entityRadius* sin(i * twicePI / lineAmount))
+			);
 		}
 		glEnd();
 	}

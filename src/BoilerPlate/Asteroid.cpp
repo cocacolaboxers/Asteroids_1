@@ -1,67 +1,68 @@
 #include "Asteroid.hpp"
 
-const float SIZE_REDUCING_FACTOR = 0.5; // Reduces a point's coordinates
-const float SIZE_ENLARGING_FACTOR = 0.9; // Enlarges a point's coodinates
+const float SIZE_REDUCING_FACTOR = 0.8; // Reduces a point's coordinates
+const float SIZE_ENLARGING_FACTOR = 1.5; // Enlarges a point's coodinates
 const float ROTATION_SPEED = 90.0f;
+const float MOVING_SPEED = 60.0f;
 
 
 Asteroid::Asteroid(Size size, float xCoordinate, float yCoordinate, float initialOrientation)
 {
-	m_asteroid_size = size;
-	entityOrientation = initialOrientation;
+	m_asteroidSize = size;
+	m_entityOrientation = initialOrientation;
 	ArrangeEntityPoints();
-	ApplyImpulse(Vector2(50, 50));
-	entityPosition = Vector2(xCoordinate, yCoordinate);
+	m_entityPosition = Vector2(xCoordinate, yCoordinate);
+	ApplyImpulse(Vector2(MOVING_SPEED, MOVING_SPEED));
 }
 
 void Asteroid::ArrangeEntityPoints()
 {
-	switch (m_asteroid_size)
+	switch (m_asteroidSize)
 	{
 	case Asteroid::Size::SMALL:
-		entityPoints.push_back(Vector2(0.0f, 100.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(20.0f, 90.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(40.0f, 80.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(60.0f, 40.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(70.0f, 20.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(60.0f, -20.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(40.0f, -15.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(20.0f, -20.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(0.0f, -50.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(-20.0f, -35.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(-50.0f, 2.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(-60.0f, 10.0f)*SIZE_REDUCING_FACTOR);
-		entityPoints.push_back(Vector2(-40.0f, 80.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(0.0f, 50.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(10.0f, 45.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(20.0f, 40.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(30.0f, 20.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(35.0f, 10.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(30.0f, -10.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(20.0f, -7.5f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(10.0f, -10.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(0.0f, -25.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(-10.0f, -17.5f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(-25.0f, 1.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(-30.0f, 5.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(-20.0f, 40.0f)*SIZE_REDUCING_FACTOR);
 		break;
 	case Asteroid::Size::MEDIUM:
-		entityPoints.push_back(Vector2(0.0f, 100.0f));
-		entityPoints.push_back(Vector2(20.0f, 90.0f));
-		entityPoints.push_back(Vector2(40.0f, 80.0f));
-		entityPoints.push_back(Vector2(60.0f, 40.0f));
-		entityPoints.push_back(Vector2(70.0f, 20.0f));
-		entityPoints.push_back(Vector2(60.0f, -20.0f));
-		entityPoints.push_back(Vector2(40.0f, -15.0f));
-		entityPoints.push_back(Vector2(20.0f, -20.0f));
-		entityPoints.push_back(Vector2(0.0f, -50.0f));
-		entityPoints.push_back(Vector2(-20.0f, -35.0f));
-		entityPoints.push_back(Vector2(-50.0f, 2.0f));
-		entityPoints.push_back(Vector2(-60.0f, 10.0f));
-		entityPoints.push_back(Vector2(-40.0f, 80.0f));
+		m_entityPoints.push_back(Vector2(0.0f, 50.0f));
+		m_entityPoints.push_back(Vector2(10.0f, 45.0f));
+		m_entityPoints.push_back(Vector2(20.0f, 40.0f));
+		m_entityPoints.push_back(Vector2(30.0f, 20.0f));
+		m_entityPoints.push_back(Vector2(35.0f, 10.0f));
+		m_entityPoints.push_back(Vector2(30.0f, -10.0f));
+		m_entityPoints.push_back(Vector2(20.0f, -7.5f));
+		m_entityPoints.push_back(Vector2(10.0f, -10.0f));
+		m_entityPoints.push_back(Vector2(0.0f, -25.0f));
+		m_entityPoints.push_back(Vector2(-10.0f, -17.5f));
+		m_entityPoints.push_back(Vector2(-25.0f, 1.0f));
+		m_entityPoints.push_back(Vector2(-30.0f, 5.0f));
+		m_entityPoints.push_back(Vector2(-20.0f, 40.0f));
 		break;
 	case Asteroid::Size::BIG:
-		entityPoints.push_back(Vector2(0.0f, 100.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(20.0f, 90.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(40.0f, 80.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(60.0f, 40.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(70.0f, 20.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(60.0f, -20.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(40.0f, -15.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(20.0f, -20.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(0.0f, -50.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(-20.0f, -35.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(-50.0f, 2.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(-60.0f, 10.0f)*SIZE_ENLARGING_FACTOR);
-		entityPoints.push_back(Vector2(-40.0f, 80.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(0.0f, 50.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(10.0f, 45.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(20.0f, 40.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(30.0f, 20.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(35.0f, 10.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(30.0f, -10.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(20.0f, -7.5f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(10.0f, -10.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(0.0f, -25.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(-10.0f, -17.5f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(-25.0f, 1.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(-30.0f, 5.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(-20.0f, 40.0f)*SIZE_ENLARGING_FACTOR);
 		break;
 	default:
 		break;
@@ -71,31 +72,35 @@ void Asteroid::ArrangeEntityPoints()
 void Asteroid::Update(float deltaTime)
 {
 	//Rotate the asteroid
-	entityOrientation += ROTATION_SPEED * deltaTime;
+	m_entityOrientation += ROTATION_SPEED * deltaTime;
 	Entity::Update(deltaTime);
 }
 
 void Asteroid::ApplyImpulse(Vector2 impulse)
 {
-	if (entityMass > 0)
+	int sizeBasedImpulse = ((int)m_asteroidSize + 1) * MOVING_SPEED; //Used to make asteroids move faster or slower acording to their size
+
+	if (m_entityMass > 0)
 	{
-		entityVelocity.x -= (impulse.x / entityMass) * sinf(utility.ToRadians(entityOrientation)) + ((int)m_asteroid_size+1);
-		entityVelocity.y += (impulse.y / entityMass) * cosf(utility.ToRadians(entityOrientation)) + ((int)m_asteroid_size+1);
+		m_entityVelocity.x -= (impulse.x / m_entityMass) * sinf(m_utility.ToRadians(m_entityOrientation)) + sizeBasedImpulse;
+		m_entityVelocity.y += (impulse.y / m_entityMass) * cosf(m_utility.ToRadians(m_entityOrientation)) + sizeBasedImpulse;
 	}
-	//WORKING HERE [12:35]
 }
 
 Asteroid::Size Asteroid::GetSize()
 {
-	return m_asteroid_size;
+	return m_asteroidSize;
 }
 
 void Asteroid::Render()
 {
 	glLoadIdentity();
-	glTranslatef(entityPosition.x, entityPosition.y, 0.0f);
-	glRotatef(entityOrientation, 0.0f, 0.0f, 1.0f);
+	glTranslatef(m_entityPosition.x, m_entityPosition.y, 0.0f);
+	glRotatef(m_entityOrientation, 0.0f, 0.0f, 1.0f);
 
 	//Draw Asteroid
 	DrawEntity();
+
+	//Draw Bounding Circles
+
 }

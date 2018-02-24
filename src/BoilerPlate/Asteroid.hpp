@@ -11,9 +11,9 @@ public:
 	/*ENUMERATED TYPE*/
 	enum struct Size
 	{
-		SMALL = 0,
+		BIG = 0,
 		MEDIUM = 1,
-		BIG = 2
+		SMALL = 2
 	};
 	/*CTOR*/
 	Asteroid(Size, float, float, float);
@@ -28,7 +28,7 @@ public:
 
 private:
 	/*PRIVATE MEMBERS*/
-	Size m_asteroid_size;
+	Size m_asteroidSize;
 };
 
 #endif // !_ASTEROID_H_
