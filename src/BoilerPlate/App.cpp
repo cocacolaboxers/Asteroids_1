@@ -136,6 +136,11 @@ namespace Engine
 			m_asteroids.push_back(Asteroid(Asteroid::Size::SMALL, 0, 0, 0));
 			m_asteroid_amount++;
 			break;
+		case SDL_SCANCODE_R:
+			SDL_Log("A key was pressed.");
+			m_asteroids.pop_back();
+			m_asteroid_amount--;
+			break;
 		default:
 			SDL_Log("% key was pressed.", keyBoardEvent.keysym.scancode);
 			break;
