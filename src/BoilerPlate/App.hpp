@@ -80,6 +80,7 @@ namespace Engine
 		Player*								m_player;
 		Asteroid	*							m_asteroid;
 		std::vector<Asteroid>				m_asteroids;
+		int									m_asteroid_amount;
 	};
 }
 #endif /* GAME_HPP */

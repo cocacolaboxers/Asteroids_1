@@ -22,9 +22,9 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		//m_asteroid = new Asteroid((Asteroid::Size)0);
+		m_asteroid_amount = 5;
 
-		CreateAsteroid(10);
+		CreateAsteroid(m_asteroid_amount);
 	}
 
 	App::~App()
@@ -41,12 +41,23 @@ namespace Engine
 		srand(time(NULL));
 
 		int currentsize;
+		float xCoordinate;
+		float yCoordinate;
+		float orientation;
+		int negnegmothafucka = 1;
 		
 		for (int i = 0; i < amount; i++)
 		{
 			currentsize = rand() % 3;
+			xCoordinate = rand() % 320 * negnegmothafucka;
+			yCoordinate = rand() % 568 * negnegmothafucka; 
+			orientation = rand() % 361;
 
-			m_asteroids.push_back(Asteroid((Asteroid::Size)currentsize));
+
+			m_asteroids.push_back(Asteroid((Asteroid::Size)currentsize, xCoordinate, 
+				yCoordinate, orientation));
+
+			negnegmothafucka *= -1; //MUCHACHO CAMBIA ESO
 		}
 	}
 
@@ -119,6 +130,11 @@ namespace Engine
 		case SDL_SCANCODE_D:
 			SDL_Log("D key was pressed.");
 			m_player->ShowBoundingCircles(true);
+			break;
+		case SDL_SCANCODE_A:
+			SDL_Log("A key was pressed.");
+			m_asteroids.push_back(Asteroid(Asteroid::Size::SMALL, 0, 0, 0));
+			m_asteroid_amount++;
 			break;
 		default:
 			SDL_Log("% key was pressed.", keyBoardEvent.keysym.scancode);

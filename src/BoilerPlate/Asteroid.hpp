@@ -16,7 +16,7 @@ public:
 		BIG = 2
 	};
 	/*CTOR*/
-	Asteroid(Size);
+	Asteroid(Size, float, float, float);
 
 	/*PUBLIC FUNCTIONS*/
 	void Render(void) override;

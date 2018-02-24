@@ -6,6 +6,8 @@
 #include "Vector2.hpp"
 #include "MathUtilities.hpp"
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 // OpenGL includes
 #include <GL/glew.h>

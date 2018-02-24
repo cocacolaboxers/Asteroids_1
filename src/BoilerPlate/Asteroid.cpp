@@ -1,14 +1,17 @@
 #include "Asteroid.hpp"
 
 const float SIZE_REDUCING_FACTOR = 0.5; // Reduces a point's coordinates
-const float SIZE_ENLARGING_FACTOR = 1.5; // Enlarges a point's coodinates
+const float SIZE_ENLARGING_FACTOR = 0.9; // Enlarges a point's coodinates
 const float ROTATION_SPEED = 90.0f;
 
-Asteroid::Asteroid(Size size)
+
+Asteroid::Asteroid(Size size, float xCoordinate, float yCoordinate, float initialOrientation)
 {
 	m_asteroid_size = size;
+	entityOrientation = initialOrientation;
 	ArrangeEntityPoints();
-	ApplyImpulse(Vector2(75, 75));
+	ApplyImpulse(Vector2(50, 50));
+	entityPosition = Vector2(xCoordinate, yCoordinate);
 }
 
 void Asteroid::ArrangeEntityPoints()
@@ -76,8 +79,8 @@ void Asteroid::ApplyImpulse(Vector2 impulse)
 {
 	if (entityMass > 0)
 	{
-		entityVelocity.x -= (impulse.x / entityMass) * sinf(utility.ToRadians(entityOrientation)) + (int)m_asteroid_size;
-		entityVelocity.y += (impulse.y / entityMass) * cosf(utility.ToRadians(entityOrientation)) + (int)m_asteroid_size;
+		entityVelocity.x -= (impulse.x / entityMass) * sinf(utility.ToRadians(entityOrientation)) + ((int)m_asteroid_size+1);
+		entityVelocity.y += (impulse.y / entityMass) * cosf(utility.ToRadians(entityOrientation)) + ((int)m_asteroid_size+1);
 	}
 	//WORKING HERE [12:35]
 }
