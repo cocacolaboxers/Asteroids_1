@@ -2,12 +2,13 @@
 
 const float SIZE_REDUCING_FACTOR = 0.5; // Reduces a point's coordinates
 const float SIZE_ENLARGING_FACTOR = 1.5; // Enlarges a point's coodinates
+const float ROTATION_SPEED = 90.0f;
 
 Asteroid::Asteroid(Size size)
 {
 	m_asteroid_size = size;
 	ArrangeEntityPoints();
-	ApplyImpulse(Vector2(10, 10));
+	ApplyImpulse(Vector2(75, 75));
 }
 
 void Asteroid::ArrangeEntityPoints()
@@ -66,8 +67,19 @@ void Asteroid::ArrangeEntityPoints()
 
 void Asteroid::Update(float deltaTime)
 {
-	//
+	//Rotate the asteroid
+	entityOrientation += ROTATION_SPEED * deltaTime;
 	Entity::Update(deltaTime);
+}
+
+void Asteroid::ApplyImpulse(Vector2 impulse)
+{
+	if (entityMass > 0)
+	{
+		entityVelocity.x -= (impulse.x / entityMass) * sinf(utility.ToRadians(entityOrientation)) + (int)m_asteroid_size;
+		entityVelocity.y += (impulse.y / entityMass) * cosf(utility.ToRadians(entityOrientation)) + (int)m_asteroid_size;
+	}
+	//WORKING HERE [12:35]
 }
 
 Asteroid::Size Asteroid::GetSize()

@@ -22,7 +22,9 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroid = new Asteroid(Asteroid::Size::SMALL);
+		//m_asteroid = new Asteroid((Asteroid::Size)0);
+
+		CreateAsteroid(10);
 	}
 
 	App::~App()
@@ -32,6 +34,20 @@ namespace Engine
 			delete m_player;
 		}
 		CleanupSDL();
+	}
+
+	void App::CreateAsteroid(int amount)
+	{
+		srand(time(NULL));
+
+		int currentsize;
+		
+		for (int i = 0; i < amount; i++)
+		{
+			currentsize = rand() % 3;
+
+			m_asteroids.push_back(Asteroid((Asteroid::Size)currentsize));
+		}
 	}
 
 	void App::Execute()
@@ -89,7 +105,6 @@ namespace Engine
 		case SDL_SCANCODE_UP:
 			SDL_Log("Up key was pressed.");
 			m_player->MoveForward();
-			m_player->SetThrustingStatus(true);
 			break;
 
 		case SDL_SCANCODE_LEFT:
@@ -101,8 +116,12 @@ namespace Engine
 			SDL_Log("Right key was pressed.");
 			m_player->RotateRight();
 			break;
+		case SDL_SCANCODE_D:
+			SDL_Log("D key was pressed.");
+			m_player->ShowBoundingCircles(true);
+			break;
 		default:
-			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
+			SDL_Log("% key was pressed.", keyBoardEvent.keysym.scancode);
 			break;
 		}
 	}
@@ -118,6 +137,9 @@ namespace Engine
 		case SDL_SCANCODE_UP:
 			m_player->SetThrustingStatus(false);
 			break;
+		case SDL_SCANCODE_D:
+			m_player->ShowBoundingCircles(false);
+			break;
 		default:
 			//DO NOTHING
 			break;
@@ -131,7 +153,14 @@ namespace Engine
 		// Update code goes here
 		//
 		m_player->Update(DESIRED_FRAME_TIME);
-		m_asteroid->Update(DESIRED_FRAME_TIME);
+		//m_asteroid->Update(DESIRED_FRAME_TIME);
+
+		std::vector<Asteroid>::iterator it = m_asteroids.begin();
+
+		for (; it != m_asteroids.end(); it++)
+		{
+			(*it).Update(DESIRED_FRAME_TIME);
+		}
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
 
@@ -158,7 +187,14 @@ namespace Engine
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		m_player->Render();
-		m_asteroid->Render();
+		//m_asteroid->Render();
+
+		std::vector<Asteroid>::iterator it = m_asteroids.begin();
+
+		for (; it != m_asteroids.end(); it++)
+		{
+			(*it).Render();
+		}
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}

@@ -5,6 +5,9 @@
 // C++ STL
 #include <string>
 #include <list>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
 
 // Asteroids
 #include "SDLEvent.hpp"
@@ -59,6 +62,7 @@ namespace Engine
 		void OnExit							( ) override;
 		void OnKeyDown						( SDL_KeyboardEvent keyBoardEvent ) override;
 		void OnKeyUp						( SDL_KeyboardEvent keyBoardEvent ) override;
+		void CreateAsteroid				(int);
 
 
 		/* =============================================================
@@ -75,7 +79,7 @@ namespace Engine
 		Engine::TimeManager*				m_timer;
 		Player*								m_player;
 		Asteroid	*							m_asteroid;
-
+		std::vector<Asteroid>				m_asteroids;
 	};
 }
 #endif /* GAME_HPP */

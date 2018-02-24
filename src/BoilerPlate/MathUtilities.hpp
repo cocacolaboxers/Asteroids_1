@@ -45,7 +45,7 @@ public:
 
 	//Clamps a float (or an int) to be within a specified range (merely moves the point to the nearest available value)
 	template<class T>
-	T clamp(T x, T min, T max)
+	T Clamp(T x, T min, T max)
 	{
 		if (x < min)
 			x = min;
@@ -56,14 +56,14 @@ public:
 
 	//Converts an angle in degrees to radians
 	template<class T>
-	float toRadians(T angle)
+	float ToRadians(T angle)
 	{
 		return angle * (PI / 180);
 	}
 
 	//Converts an angle in radians to degrees
 	template<class T>
-	float toDegrees(T angle)
+	float ToDegrees(T angle)
 	{
 		return angle * (180 / PI);
 	}

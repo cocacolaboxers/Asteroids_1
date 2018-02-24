@@ -11,9 +11,9 @@ public:
 	/*ENUMERATED TYPE*/
 	enum struct Size
 	{
-		SMALL,
-		MEDIUM,
-		BIG
+		SMALL = 0,
+		MEDIUM = 1,
+		BIG = 2
 	};
 	/*CTOR*/
 	Asteroid(Size);
@@ -22,6 +22,7 @@ public:
 	void Render(void) override;
 	void ArrangeEntityPoints(void) override;
 	void Update(float) override;
+	void ApplyImpulse(Vector2) override;
 
 	Size GetSize(void);
 

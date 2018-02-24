@@ -14,7 +14,7 @@ public:
 	void Update(float) override;
 	void Render(void) override;
 
-	void MoveForward(void) override;
+	void MoveForward(void);
 	void RotateLeft(void);
 	void RotateRight(void);
 	void DrawThrust(void);

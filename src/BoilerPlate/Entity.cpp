@@ -2,13 +2,13 @@
 
 const float INITIAL_WINDOW_WIDTH = 1136.0f;
 const float INITIAL_WINDOW_HEIGHT = 640.0f;
-MathUtilities utility;
 
 Entity::Entity()
 {
 	entityPosition = Vector2(Vector2::Origin);
 	entityOrientation = 0.0f;
 	entityMass = 1.0f;
+	m_showingCircles = false;
 
 	minWindowHeight = -INITIAL_WINDOW_HEIGHT / 2;
 	maxWindowHeight = -minWindowHeight;
@@ -56,11 +56,6 @@ void Entity::Render(void)
 
 }
 
-void Entity::MoveForward(void)
-{
-
-}
-
 float Entity::Warp(float coordinate, float min, float max)
 {
 	if (coordinate < min) return max - (min - coordinate);
@@ -72,7 +67,26 @@ void Entity::ApplyImpulse(Vector2 impulse)
 {
 	if (entityMass > 0)
 	{
-		entityVelocity.x -= (impulse.x / entityMass) * sinf(utility.toRadians(entityOrientation));
-		entityVelocity.y += (impulse.y / entityMass) * cosf(utility.toRadians(entityOrientation));
+		entityVelocity.x -= (impulse.x / entityMass) * sinf(utility.ToRadians(entityOrientation));
+		entityVelocity.y += (impulse.y / entityMass) * cosf(utility.ToRadians(entityOrientation));
 	}
+}
+
+void Entity::DrawBoundingCircle(void)
+{
+	if(m_showingCircles)
+	{ 
+		glBegin(GL_LINE_LOOP);
+		for (int i = 0; i < 361; i++)
+		{
+			glVertex2f(cosf(utility.ToRadians(i))*entityRadius,
+				sinf(utility.ToRadians(i))*entityRadius);
+		}
+		glEnd();
+	}
+}
+
+void Entity::ShowBoundingCircles(bool status)
+{
+	m_showingCircles = status;
 }

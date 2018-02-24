@@ -20,12 +20,13 @@ public:
 	/*PUBLIC FUNCTIONS*/
 	virtual void Update(float);
 	virtual void Render(void);
-	virtual void MoveForward(void);
 	void DrawEntity(void);
 	void OnWindowResize(float, float);
 	virtual void ArrangeEntityPoints(void);
 	float Warp(float, float, float);
-	void ApplyImpulse(Vector2 impulse);
+	virtual void ApplyImpulse(Vector2 impulse);
+	void DrawBoundingCircle(void);
+	void ShowBoundingCircles(bool);
 
 protected:
 	/*PRIVATE MEMBERS*/
@@ -33,6 +34,9 @@ protected:
 	Vector2 entityVelocity;
 	float entityOrientation;
 	float entityMass;
+	MathUtilities utility;
+	float entityRadius;
+	bool m_showingCircles;
 
 	float minWindowHeight;
 	float maxWindowHeight;

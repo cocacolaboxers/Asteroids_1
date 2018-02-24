@@ -1,16 +1,15 @@
 #include "Player.hpp"
-
-const float INITIAL_WINDOW_WIDTH = 1136.0f;
-const float INITIAL_WINDOW_HEIGHT = 640.0f ;
 const float MOVING_SPEED = 10.0f;
 const float ROTATION_SPEED = 10.0f; 
-const float DESIRED_MAX_SPEED = 200;
+const float DESIRED_MAX_SPEED = 300.0f;
+const float FRICTION_FORCE = 0.999F; //Proportion?
 
 Player::Player()
 {
 	m_isThrusting = false;
 	ArrangeEntityPoints();
 	ArrangeThrusterPoints();
+	entityRadius = 15.0f; //*Hardcoded* (Ship's highest + lowest points (diameter) / 2
 }
 
 void Player::ArrangeEntityPoints()
@@ -34,15 +33,20 @@ void Player::Update(float deltaTime)
 	m_playerCurrentSpeed = std::fabs(entityVelocity.Length());
 	if(m_playerCurrentSpeed > DESIRED_MAX_SPEED)
 	{
-		entityVelocity.x = (entityVelocity.x / m_playerCurrentSpeed) * DESIRED_MAX_SPEED;
-		entityVelocity.y = (entityVelocity.y / m_playerCurrentSpeed) * DESIRED_MAX_SPEED;
+		entityVelocity.x = utility.Clamp(entityVelocity.x, -DESIRED_MAX_SPEED, DESIRED_MAX_SPEED);
+		entityVelocity.y = utility.Clamp(entityVelocity.y, -DESIRED_MAX_SPEED, DESIRED_MAX_SPEED);
 	}
 
+	//Because friction is a thing that exists... TODO: TURN INTO A FUNCTION?
+	entityVelocity.x *= FRICTION_FORCE;
+	entityVelocity.y *= FRICTION_FORCE;
+	
 	Entity::Update(deltaTime);
 }
 
 void Player::MoveForward()
 {
+	m_isThrusting = true;
 	ApplyImpulse(Vector2(MOVING_SPEED, MOVING_SPEED));
 }
  
@@ -87,4 +91,7 @@ void Player::Render()
 
 	//Draw thrust 
 	DrawThrust();
+
+	//Draw Bounding circle
+	DrawBoundingCircle();
 }
