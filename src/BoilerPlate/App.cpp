@@ -22,7 +22,7 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroidCount = 7;
+		m_asteroidCount = 1;
 
 		CreateAsteroid(m_asteroidCount);
 	}
@@ -48,7 +48,7 @@ namespace Engine
 		
 		for (int i = 0; i < amount; i++)
 		{
-			currentSize = rand() % 3;
+			currentSize = (int)Asteroid::Size::BIG;//rand() % 3;
 			xCoordinate = rand() % 320 + 1 * signChanger;
 			yCoordinate = rand() % 568 + 1 * signChanger; 
 			orientation = rand() % 360 + 1;
@@ -130,9 +130,18 @@ namespace Engine
 			m_player->RotateRight();
 			break;
 
-		case SDL_SCANCODE_D:
+		case SDL_SCANCODE_D: 
+		{
 			SDL_Log("D key was pressed.");
 			m_player->ShowBoundingCircles(true);
+
+			std::vector<Asteroid>::iterator it = m_asteroids.begin();
+
+			for (; it != m_asteroids.end(); it++)
+			{
+				(*it).ShowBoundingCircles(true);
+			}
+		}
 			break;
 
 		case SDL_SCANCODE_A:
@@ -169,7 +178,15 @@ namespace Engine
 			m_player->SetThrustingStatus(false);
 			break;
 		case SDL_SCANCODE_D:
+		{
 			m_player->ShowBoundingCircles(false);
+			std::vector<Asteroid>::iterator it = m_asteroids.begin();
+
+			for (; it != m_asteroids.end(); it++)
+			{
+				(*it).ShowBoundingCircles(false);
+			}
+		}
 			break;
 		default:
 			//DO NOTHING

@@ -4,6 +4,8 @@ const float SIZE_REDUCING_FACTOR = 0.8; // Reduces a point's coordinates
 const float SIZE_ENLARGING_FACTOR = 1.5; // Enlarges a point's coodinates
 const float ROTATION_SPEED = 90.0f;
 const float MOVING_SPEED = 60.0f;
+const float HIGHEST_POINT = 50.0f;
+const float LOWEST_POINT = 25.0f;
 
 
 Asteroid::Asteroid(Size size, float xCoordinate, float yCoordinate, float initialOrientation)
@@ -12,7 +14,30 @@ Asteroid::Asteroid(Size size, float xCoordinate, float yCoordinate, float initia
 	m_entityOrientation = initialOrientation;
 	ArrangeEntityPoints();
 	m_entityPosition = Vector2(xCoordinate, yCoordinate);
-	ApplyImpulse(Vector2(MOVING_SPEED, MOVING_SPEED));
+	//ApplyImpulse(Vector2(MOVING_SPEED, MOVING_SPEED));
+
+	float realMin, realMax;
+
+	switch (m_asteroidSize)
+	{
+	case Asteroid::Size::SMALL:
+		realMin = LOWEST_POINT * SIZE_REDUCING_FACTOR;
+		realMax = HIGHEST_POINT * SIZE_REDUCING_FACTOR;
+		m_entityRadius = 45 * SIZE_REDUCING_FACTOR; //(realMax + realMin) / 2.0f;
+		break;
+
+	case Asteroid::Size::MEDIUM:
+		realMin = LOWEST_POINT;
+		realMax = HIGHEST_POINT;
+		m_entityRadius = 50;//(realMax + realMin) / 2.0f;
+		break;
+
+	case Asteroid::Size::BIG:
+		realMin = LOWEST_POINT * SIZE_ENLARGING_FACTOR;
+		realMax = HIGHEST_POINT * SIZE_ENLARGING_FACTOR;
+		m_entityRadius = 50 * SIZE_ENLARGING_FACTOR;//(realMax + realMin) / 2.0f;
+		break;
+	}
 }
 
 void Asteroid::ArrangeEntityPoints()
@@ -20,7 +45,7 @@ void Asteroid::ArrangeEntityPoints()
 	switch (m_asteroidSize)
 	{
 	case Asteroid::Size::SMALL:
-		m_entityPoints.push_back(Vector2(0.0f, 50.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(0.0f, 45.0f)*SIZE_REDUCING_FACTOR);
 		m_entityPoints.push_back(Vector2(10.0f, 45.0f)*SIZE_REDUCING_FACTOR);
 		m_entityPoints.push_back(Vector2(20.0f, 40.0f)*SIZE_REDUCING_FACTOR);
 		m_entityPoints.push_back(Vector2(30.0f, 20.0f)*SIZE_REDUCING_FACTOR);
@@ -28,11 +53,11 @@ void Asteroid::ArrangeEntityPoints()
 		m_entityPoints.push_back(Vector2(30.0f, -10.0f)*SIZE_REDUCING_FACTOR);
 		m_entityPoints.push_back(Vector2(20.0f, -7.5f)*SIZE_REDUCING_FACTOR);
 		m_entityPoints.push_back(Vector2(10.0f, -10.0f)*SIZE_REDUCING_FACTOR);
-		m_entityPoints.push_back(Vector2(0.0f, -25.0f)*SIZE_REDUCING_FACTOR);
-		m_entityPoints.push_back(Vector2(-10.0f, -17.5f)*SIZE_REDUCING_FACTOR);
-		m_entityPoints.push_back(Vector2(-25.0f, 1.0f)*SIZE_REDUCING_FACTOR);
-		m_entityPoints.push_back(Vector2(-30.0f, 5.0f)*SIZE_REDUCING_FACTOR);
-		m_entityPoints.push_back(Vector2(-20.0f, 40.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(0.0f, -35.0f)*SIZE_REDUCING_FACTOR);//
+		m_entityPoints.push_back(Vector2(-20.0f, -27.5f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(-35.0f, 10.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(-40.0f, 15.0f)*SIZE_REDUCING_FACTOR);
+		m_entityPoints.push_back(Vector2(-30.0f, 45.0f)*SIZE_REDUCING_FACTOR);
 		break;
 	case Asteroid::Size::MEDIUM:
 		m_entityPoints.push_back(Vector2(0.0f, 50.0f));
@@ -43,7 +68,7 @@ void Asteroid::ArrangeEntityPoints()
 		m_entityPoints.push_back(Vector2(30.0f, -10.0f));
 		m_entityPoints.push_back(Vector2(20.0f, -7.5f));
 		m_entityPoints.push_back(Vector2(10.0f, -10.0f));
-		m_entityPoints.push_back(Vector2(0.0f, -25.0f));
+		m_entityPoints.push_back(Vector2(0.0f, -25.0f)); // 
 		m_entityPoints.push_back(Vector2(-10.0f, -17.5f));
 		m_entityPoints.push_back(Vector2(-25.0f, 1.0f));
 		m_entityPoints.push_back(Vector2(-30.0f, 5.0f));
@@ -58,7 +83,7 @@ void Asteroid::ArrangeEntityPoints()
 		m_entityPoints.push_back(Vector2(30.0f, -10.0f)*SIZE_ENLARGING_FACTOR);
 		m_entityPoints.push_back(Vector2(20.0f, -7.5f)*SIZE_ENLARGING_FACTOR);
 		m_entityPoints.push_back(Vector2(10.0f, -10.0f)*SIZE_ENLARGING_FACTOR);
-		m_entityPoints.push_back(Vector2(0.0f, -25.0f)*SIZE_ENLARGING_FACTOR);
+		m_entityPoints.push_back(Vector2(0.0f, -25.0f)*SIZE_ENLARGING_FACTOR);//
 		m_entityPoints.push_back(Vector2(-10.0f, -17.5f)*SIZE_ENLARGING_FACTOR);
 		m_entityPoints.push_back(Vector2(-25.0f, 1.0f)*SIZE_ENLARGING_FACTOR);
 		m_entityPoints.push_back(Vector2(-30.0f, 5.0f)*SIZE_ENLARGING_FACTOR);
@@ -72,7 +97,7 @@ void Asteroid::ArrangeEntityPoints()
 void Asteroid::Update(float deltaTime)
 {
 	//Rotate the asteroid
-	m_entityOrientation += ROTATION_SPEED * deltaTime;
+	//m_entityOrientation += ROTATION_SPEED * deltaTime;
 	Entity::Update(deltaTime);
 }
 
@@ -102,5 +127,5 @@ void Asteroid::Render()
 	DrawEntity();
 
 	//Draw Bounding Circles
-
+	DrawBoundingCircle();
 }

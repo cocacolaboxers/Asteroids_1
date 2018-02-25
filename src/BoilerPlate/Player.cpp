@@ -9,12 +9,12 @@ Player::Player()
 	m_isThrusting = false;
 	ArrangeEntityPoints();
 	ArrangeThrusterPoints();
-	m_entityRadius = 19.5f;
+	m_entityRadius = 15.0f;
 }
 
 void Player::ArrangeEntityPoints()
 {
-	m_entityPoints.push_back(Vector2(0.0f, 20.0f));
+	m_entityPoints.push_back(Vector2(0.0f, 15.0f));
 	m_entityPoints.push_back(Vector2(12.0f, -10.0f));
 	m_entityPoints.push_back(Vector2(6.0f, -4.0f));
 	m_entityPoints.push_back(Vector2(-6.0f, -4.0f));
