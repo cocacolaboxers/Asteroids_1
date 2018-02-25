@@ -22,7 +22,7 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroidCount = 1;
+		m_asteroidCount = 7;
 
 		CreateAsteroid(m_asteroidCount);
 	}
@@ -48,7 +48,7 @@ namespace Engine
 		
 		for (int i = 0; i < amount; i++)
 		{
-			currentSize = (int)Asteroid::Size::BIG;//rand() % 3;
+			currentSize = rand() % 3;
 			xCoordinate = rand() % 320 + 1 * signChanger;
 			yCoordinate = rand() % 568 + 1 * signChanger; 
 			orientation = rand() % 360 + 1;
