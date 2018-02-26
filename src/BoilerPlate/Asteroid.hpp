@@ -11,23 +11,23 @@ public:
 	/*ENUMERATED TYPE*/
 	enum struct Size
 	{
-		SMALL,
-		MEDIUM,
-		BIG
+		BIG = 0,
+		MEDIUM = 1,
+		SMALL = 2
 	};
 	/*CTOR*/
-	Asteroid(Size);
+	Asteroid(Size, float, float, float);
 
 	/*PUBLIC FUNCTIONS*/
 	void Render(void) override;
 	void ArrangeEntityPoints(void) override;
-	void Update(void) override;
-
+	void Update(float) override;
+	void ApplyImpulse(Vector2) override;
 	Size GetSize(void);
 
 private:
 	/*PRIVATE MEMBERS*/
-	Size m_asteroid_size;
+	Size m_asteroidSize;
 };
 
 #endif // !_ASTEROID_H_
