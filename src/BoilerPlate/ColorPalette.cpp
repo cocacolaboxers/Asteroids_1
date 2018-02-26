@@ -8,6 +8,7 @@ ColorPalette::ColorPalette()
 	GRAY = Color(0.5f, 0.5f, 0.5f, 0.5f);
 	ORANGE = Color(1.0f, 0.5f, 0.0f, 0.0f);
 	NAVY = Color(0.1f, 0.1f, 0.15f, 1.0f);
+	WHITE = Color(1.0f, 1.0f, 1.0f, 0.0f);
 }
 
 

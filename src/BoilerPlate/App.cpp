@@ -12,6 +12,7 @@ namespace Engine
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
 	const float ROTATING_SPEED = 50.0f;
+	const int MAX_ANGLE_IN_DEGREES = 360;
 
 	App::App(const std::string& title, const int width, const int height)
 		: m_title(title)
@@ -24,7 +25,7 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroidCount = 7;
+		m_asteroidCount = 6;
 
 		m_entities.push_back(m_player);
 		CreateAsteroid(m_asteroidCount);
@@ -52,10 +53,10 @@ namespace Engine
 		
 		for (int i = 0; i < amount; i++)
 		{
-			currentSize = rand() % 3;
-			xCoordinate = rand() % 320 + 1 * signChanger;
-			yCoordinate = rand() % 568 + 1 * signChanger; 
-			orientation = rand() % 360 + 1;
+			currentSize = rand() % ((int)Asteroid::Size::SMALL + 1);
+			xCoordinate = rand() % (m_width/2) * signChanger;
+			yCoordinate = rand() % (m_height/2) * signChanger; 
+			orientation = rand() % MAX_ANGLE_IN_DEGREES;
 
 			Asteroid* currentAsteroid = new Asteroid((Asteroid::Size)currentSize, xCoordinate,
 				yCoordinate, orientation);
@@ -71,7 +72,7 @@ namespace Engine
 
 	void App::RemoveAsteroid(void)
 	{
-		if (m_asteroidCount > 0)
+		if (m_asteroids.size() > 0)
 		{
 			m_asteroids.pop_back();
 			m_asteroidCount--;
@@ -102,13 +103,13 @@ namespace Engine
 
 				if (distance <= aproximateDistanceToBoundingCircle) 
 				{
-					glColor3f(1.0, 0.0, 0.0); //Make line red
+					glColor3f(m_colorPalette.RED.redValue, m_colorPalette.RED.blueValue, m_colorPalette.RED.greenValue); //Make line red
 					glVertex2f(playerPosition.x, playerPosition.y);
 					glVertex2f(positionOfCurrentAsteroid.x, positionOfCurrentAsteroid.y);
 				}
 
 				//Reset color to white
-				glColor3f(1.0, 1.0, 1.0);
+				glColor3f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.greenValue);
 			}
 			glEnd();
 		}
@@ -193,7 +194,7 @@ namespace Engine
 				else
 				{
 					if(m_bullets[j]->GetDisappearanceStatus())
-						m_bullets.erase(m_bullets.begin() + j); //Delete bullet that has not collided
+						m_bullets.erase(m_bullets.begin() + j); //Delete bullet that has disappeared and not collided
 				}
 			}
 		}
@@ -361,10 +362,8 @@ namespace Engine
 
 	void App::Render()
 	{
-		ColorPalette colorPalette;
-
-		glClearColor(colorPalette.NAVY.redValue, colorPalette.NAVY.greenValue,
-			colorPalette.NAVY.blueValue, colorPalette.NAVY.alphaValue);
+		glClearColor(m_colorPalette.NAVY.redValue, m_colorPalette.NAVY.greenValue,
+			m_colorPalette.NAVY.blueValue, m_colorPalette.NAVY.alphaValue);
 
 		glClear(GL_COLOR_BUFFER_BIT);
 

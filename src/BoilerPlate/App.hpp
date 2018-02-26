@@ -87,6 +87,7 @@ namespace Engine
 		std::vector<Bullet*>					m_bullets;
 		int									m_asteroidCount;
 		std::vector<Entity*>					m_entities;
+		ColorPalette							m_colorPalette;
 	};
 }
 #endif /* GAME_HPP */

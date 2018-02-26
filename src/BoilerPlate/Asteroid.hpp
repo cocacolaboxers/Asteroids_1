@@ -23,7 +23,6 @@ public:
 	void ArrangeEntityPoints(void) override;
 	void Update(float) override;
 	void ApplyImpulse(Vector2) override;
-
 	Size GetSize(void);
 
 private:

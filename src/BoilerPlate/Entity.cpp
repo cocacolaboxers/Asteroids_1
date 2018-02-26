@@ -145,7 +145,7 @@ bool Entity::GetCollisionStatus()
 	return m_hasCollided;
 }
 
-void Entity::forcePositionChange(float newXcoordinate, float newYcoordinate)
+void Entity::ForcePositionChange(float newXcoordinate, float newYcoordinate)
 {
 	m_entityPosition.x = newXcoordinate;
 	m_entityPosition.y = newYcoordinate;

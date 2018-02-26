@@ -48,7 +48,7 @@ Bullet* Player::Shoot(void)
 		calculatedBulletVelocity.x = (m_playerCurrentSpeed + BULLET_SPEED) * sinf(m_utility.ToRadians(m_entityOrientation));
 		calculatedBulletVelocity.y = (m_playerCurrentSpeed + BULLET_SPEED) * cosf(m_utility.ToRadians(m_entityOrientation));
 
-		shotBullet->forcePositionChange(m_entityPosition.x, m_entityPosition.y);
+		shotBullet->ForcePositionChange(m_entityPosition.x, m_entityPosition.y);
 		shotBullet->ApplyImpulse(calculatedBulletVelocity);
 	}
 	else

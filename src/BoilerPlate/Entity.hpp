@@ -35,7 +35,7 @@ public:
 	void ToggleDebuggingFeatures(bool);
 	bool GetDebuggingStatus();
 	bool GetCollisionStatus();
-	void forcePositionChange(float, float);
+	void ForcePositionChange(float, float);
 	float GetOrientation(void);
 
 protected:
