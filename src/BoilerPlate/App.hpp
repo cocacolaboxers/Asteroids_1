@@ -19,6 +19,7 @@
 #include "MathUtilities.hpp"
 #include "Player.hpp"
 #include "Asteroid.hpp"
+#include "Bullet.hpp"
 
 namespace Engine
 {
@@ -64,7 +65,8 @@ namespace Engine
 		void OnKeyUp							( SDL_KeyboardEvent keyBoardEvent ) override;
 		void CreateAsteroid					(int);
 		void RemoveAsteroid					(void);
-		void DrawLinesToNearbyAsteroids		();
+		void DrawLinesToNearbyAsteroids		(void);
+		void OnCollision						(void);
 
 
 		/* =============================================================
@@ -80,8 +82,10 @@ namespace Engine
 		GameState::State						m_state;
 		Engine::TimeManager*					m_timer;
 		Player*								m_player;
-		std::vector<Asteroid>				m_asteroids;
+		std::vector<Asteroid*>				m_asteroids;
+		std::vector<Bullet*>					m_bullets;
 		int									m_asteroidCount;
+		std::vector<Entity*>					m_entities;
 	};
 }
 #endif /* GAME_HPP */

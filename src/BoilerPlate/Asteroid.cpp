@@ -156,13 +156,16 @@ Asteroid::Size Asteroid::GetSize()
 
 void Asteroid::Render()
 {
-	glLoadIdentity();
-	glTranslatef(m_entityPosition.x, m_entityPosition.y, 0.0f);
-	glRotatef(m_entityOrientation, 0.0f, 0.0f, 1.0f);
+	if (!m_hasCollided)
+	{
+		glLoadIdentity();
+		glTranslatef(m_entityPosition.x, m_entityPosition.y, 0.0f);
+		glRotatef(m_entityOrientation, 0.0f, 0.0f, 1.0f);
 
-	//Draw Asteroid
-	DrawEntity();
+		//Draw Asteroid
+		DrawEntity();
 
-	//Draw Bounding Circles
-	DrawBoundingCircle();
+		//Draw Bounding Circles
+		DrawBoundingCircle();
+	}
 }

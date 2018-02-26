@@ -120,17 +120,40 @@ bool Entity::DetectCollision(Entity rhs)
 
 	float distanceBetweenEntities = CalculateDistanceBetweenEntities(rhs);
 
-	return distanceBetweenEntities <= radialDistance;
+	bool detectedCollision = distanceBetweenEntities <= radialDistance;
+
+	if (detectedCollision && !m_isDebugging) 
+	{
+		m_hasCollided = true;
+	}
+
+	return detectedCollision;
 }
 
-void Entity::toggleDebuggingFeatures(bool status)
+void Entity::ToggleDebuggingFeatures(bool status)
 {
 	m_isDebugging = status;
 }
 
-bool Entity::getDebuggingStatus()
+bool Entity::GetDebuggingStatus()
 {
 	return m_isDebugging;
+}
+
+bool Entity::GetCollisionStatus()
+{
+	return m_hasCollided;
+}
+
+void Entity::forcePositionChange(float newXcoordinate, float newYcoordinate)
+{
+	m_entityPosition.x = newXcoordinate;
+	m_entityPosition.y = newYcoordinate;
+}
+
+float Entity::getOrientation(void)
+{
+	return m_entityOrientation;
 }
 
 

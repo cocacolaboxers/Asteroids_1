@@ -23,9 +23,11 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroidCount = 7;
+		m_asteroidCount = 2;
 
+		m_entities.push_back(m_player);
 		CreateAsteroid(m_asteroidCount);
+		SDL_Log("Current bullet count: %i", m_bullets.size());
 	}
 
 	App::~App()
@@ -54,9 +56,11 @@ namespace Engine
 			yCoordinate = rand() % 568 + 1 * signChanger; 
 			orientation = rand() % 360 + 1;
 
+			Asteroid* currentAsteroid = new Asteroid((Asteroid::Size)currentSize, xCoordinate,
+				yCoordinate, orientation);
 
-			m_asteroids.push_back(Asteroid((Asteroid::Size)currentSize, xCoordinate, 
-				yCoordinate, orientation));
+			m_asteroids.push_back(currentAsteroid);
+			m_entities.push_back(currentAsteroid);
 
 			signChanger *= -1;
 		}
@@ -75,7 +79,7 @@ namespace Engine
 
 	void App::DrawLinesToNearbyAsteroids()
 	{
-		if (m_player->getDebuggingStatus())
+		if (m_player->GetDebuggingStatus() && !m_player->GetCollisionStatus())
 		{
 			Vector2 playerPosition = m_player->GetPosition();
 			Vector2 positionOfCurrentAsteroid;
@@ -88,9 +92,9 @@ namespace Engine
 			glBegin(GL_LINE_LOOP);
 			for (int i = 0; i < m_asteroids.size(); i++)
 			{
-				positionOfCurrentAsteroid = m_asteroids[i].GetPosition();
-				radiusOfCurrentAsteroid = m_asteroids[i].GetRadius();
-				distance = m_player->CalculateDistanceBetweenEntities(m_asteroids[i]);
+				positionOfCurrentAsteroid = (*m_asteroids[i]).GetPosition();
+				radiusOfCurrentAsteroid = (*m_asteroids[i]).GetRadius();
+				distance = m_player->CalculateDistanceBetweenEntities((*m_asteroids[i]));
 
 				//Take into consideration the Asteroid's radius
 				aproximateDistanceToBoundingCircle = proximityMeasurement + radiusOfCurrentAsteroid;
@@ -106,6 +110,50 @@ namespace Engine
 				glColor3f(1.0, 1.0, 1.0);
 			}
 			glEnd();
+		}
+	}
+
+	void App::OnCollision()
+	{
+		for (int i = 0; i < m_asteroids.size(); i++)
+		{
+			if (!m_player->GetCollisionStatus() && !(*m_asteroids[i]).GetCollisionStatus())
+			{
+				if (m_player->DetectCollision(*m_asteroids[i]))
+				{
+					//Aftermath of collision goes here (m_player's status changed as part of DetectCollision code)
+				}
+
+				if(m_bullets.size()>0)
+				{
+					for(int i = 0; i < m_bullets.size(); i++)
+					{
+						if (m_bullets.size() < m_asteroids.size() && m_asteroids[i]->DetectCollision(*m_bullets[i]) /*&& !(m_bullets[i])->GetStatus()*/)
+						{
+							//When bullets collide with asteroids they plit in smaller halves.
+							Vector2 asteroidPositionBeforeCollision = m_asteroids[i]->GetPosition();
+							float asteroidOrientationBeforeCollision = m_asteroids[i]->getOrientation();
+							if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
+							{
+								//TODO: FIX THIS
+								Asteroid* firstChild = new Asteroid(Asteroid::Size::SMALL,
+									asteroidPositionBeforeCollision.x, asteroidPositionBeforeCollision.y,
+									asteroidOrientationBeforeCollision);
+
+								Asteroid* secondChild = new Asteroid(Asteroid::Size::SMALL,
+									asteroidPositionBeforeCollision.x, asteroidPositionBeforeCollision.y,
+									-asteroidOrientationBeforeCollision);
+
+								m_asteroids.push_back(firstChild);
+								m_entities.push_back(firstChild);
+								m_asteroids.push_back(secondChild);
+								m_entities.push_back(secondChild);
+							}
+						}
+					}
+			
+				}
+			}
 		}
 	}
 
@@ -179,16 +227,12 @@ namespace Engine
 		case SDL_SCANCODE_D: 
 		{
 			SDL_Log("D key was pressed.");
-			m_player->toggleDebuggingFeatures(true);
 
-			std::vector<Asteroid>::iterator it = m_asteroids.begin();
-
-			for (; it != m_asteroids.end(); it++)
+			for (int i = 0; i < m_entities.size(); i++)
 			{
-				(*it).toggleDebuggingFeatures(true);
+				m_entities[i]->ToggleDebuggingFeatures(true);
 			}
 		}
-		//DrawLineToNearbyAsteroid(m_asteroids[1]);
 			break;
 
 		case SDL_SCANCODE_A:
@@ -200,6 +244,16 @@ namespace Engine
 		case SDL_SCANCODE_R:
 			SDL_Log("A key was pressed.");
 			RemoveAsteroid();
+			break;
+
+		case SDL_SCANCODE_SPACE: {
+			SDL_Log("Space key was pressed.");
+			Bullet* currentBullet = m_player->Shoot();
+			m_bullets.push_back(currentBullet); 
+			m_entities.push_back(currentBullet);
+			SDL_Log("Current bullet count: %i", m_bullets.size());
+			SDL_Log("Current entity count: %i", m_entities.size());
+		}
 			break;
 
 		default:
@@ -221,12 +275,9 @@ namespace Engine
 			break;
 		case SDL_SCANCODE_D:
 		{
-			m_player->toggleDebuggingFeatures(false);
-			std::vector<Asteroid>::iterator it = m_asteroids.begin();
-
-			for (; it != m_asteroids.end(); it++)
+			for (int i = 0; i < m_entities.size(); i++)
 			{
-				(*it).toggleDebuggingFeatures(false);
+				m_entities[i]->ToggleDebuggingFeatures(false);
 			}
 		}
 			break;
@@ -242,14 +293,13 @@ namespace Engine
 
 		// Update code goes here
 		//
-		m_player->Update(DESIRED_FRAME_TIME);
-
-		std::vector<Asteroid>::iterator it = m_asteroids.begin();
-
-		for (; it != m_asteroids.end(); it++)
+		for (int i = 0; i < m_entities.size(); i++)
 		{
-			(*it).Update(DESIRED_FRAME_TIME);
+			m_entities[i]->Update(DESIRED_FRAME_TIME);
 		}
+
+		OnCollision();
+
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
 
@@ -275,13 +325,9 @@ namespace Engine
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		m_player->Render();
-
-		std::vector<Asteroid>::iterator it = m_asteroids.begin();
-
-		for (; it != m_asteroids.end(); it++)
+		for (int i = 0; i < m_entities.size(); i++)
 		{
-			(*it).Render();
+			m_entities[i]->Render();
 		}
 
 		DrawLinesToNearbyAsteroids();

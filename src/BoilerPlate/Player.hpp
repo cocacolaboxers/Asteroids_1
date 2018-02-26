@@ -3,7 +3,7 @@
 #define _PLAYER_H_
 
 #include "Entity.hpp"
-#include "Asteroid.hpp"
+#include "Bullet.hpp"
 
 class Player : public Entity
 {
@@ -22,6 +22,7 @@ public:
 	void SetThrustingStatus(bool);
 	void ArrangeEntityPoints(void) override;
 	void ArrangeThrusterPoints(void);
+	Bullet* Shoot(void);
 
 
 private:

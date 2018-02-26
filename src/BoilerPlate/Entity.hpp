@@ -32,8 +32,11 @@ public:
 	Vector2 GetPosition(void);
 	float GetRadius(void);
 	bool DetectCollision(Entity);
-	void toggleDebuggingFeatures(bool);
-	bool getDebuggingStatus();
+	void ToggleDebuggingFeatures(bool);
+	bool GetDebuggingStatus();
+	bool GetCollisionStatus();
+	void forcePositionChange(float, float);
+	float getOrientation(void);
 
 protected:
 	/*PRIVATE MEMBERS*/
