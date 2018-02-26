@@ -8,7 +8,8 @@ Entity::Entity()
 	m_entityPosition = Vector2(Vector2::Origin);
 	m_entityOrientation = 0.0f;
 	m_entityMass = 1.0f;
-	m_showingCircles = false;
+	m_isDebugging = false;
+	m_hasCollided = false;
 
 	m_minWindowHeight = -INITIAL_WINDOW_HEIGHT / 2;
 	m_maxWindowHeight = -m_minWindowHeight;
@@ -74,12 +75,12 @@ void Entity::ApplyImpulse(Vector2 impulse)
 
 void Entity::DrawBoundingCircle(void)
 {
-	if (m_showingCircles) 
+	if (m_isDebugging)
 	{
 		int lineAmount = 100;
 		float twicePI = 2.0f * m_utility.PI;
 
-		glLoadIdentity();
+		glLoadIdentity(); //Reload matrix to ensure translation won't be applied again on the already translated matrix
 
 		glBegin(GL_LINE_LOOP);
 		for (int i = 0; i <= lineAmount; i++)
@@ -92,7 +93,46 @@ void Entity::DrawBoundingCircle(void)
 	}
 }
 
-void Entity::ShowBoundingCircles(bool status)
+float Entity::CalculateDistanceBetweenEntities(Entity rhs)
 {
-	m_showingCircles = status;
+	float distance;
+	float deltaX = rhs.m_entityPosition.x - m_entityPosition.x;
+	float deltaY = rhs.m_entityPosition.y - m_entityPosition.y;
+
+	distance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
+
+	return distance;
 }
+
+Vector2 Entity::GetPosition(void)
+{
+	return m_entityPosition;
+}
+
+float Entity::GetRadius(void)
+{
+	return m_entityRadius;
+}
+
+bool Entity::DetectCollision(Entity rhs)
+{
+	float radialDistance = m_entityRadius + rhs.m_entityRadius;
+
+	float distanceBetweenEntities = CalculateDistanceBetweenEntities(rhs);
+
+	return distanceBetweenEntities <= radialDistance;
+}
+
+void Entity::toggleDebuggingFeatures(bool status)
+{
+	m_isDebugging = status;
+}
+
+bool Entity::getDebuggingStatus()
+{
+	return m_isDebugging;
+}
+
+
+
+

@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 
+
 namespace Engine
 {
 	const float DESIRED_FRAME_RATE = 60.0f;
@@ -61,6 +62,51 @@ namespace Engine
 		}
 
 		SDL_Log("Current Asteroid count: %i", m_asteroidCount);
+	}
+
+	void App::RemoveAsteroid(void)
+	{
+		if (m_asteroidCount > 0)
+		{
+			m_asteroids.pop_back();
+			m_asteroidCount--;
+		}
+	}
+
+	void App::DrawLinesToNearbyAsteroids()
+	{
+		if (m_player->getDebuggingStatus())
+		{
+			Vector2 playerPosition = m_player->GetPosition();
+			Vector2 positionOfCurrentAsteroid;
+			float proximityMeasurement = (m_player->GetRadius()) * 2.0f;
+			float radiusOfCurrentAsteroid;
+			float distance;
+			float aproximateDistanceToBoundingCircle;
+
+			glLoadIdentity();
+			glBegin(GL_LINE_LOOP);
+			for (int i = 0; i < m_asteroids.size(); i++)
+			{
+				positionOfCurrentAsteroid = m_asteroids[i].GetPosition();
+				radiusOfCurrentAsteroid = m_asteroids[i].GetRadius();
+				distance = m_player->CalculateDistanceBetweenEntities(m_asteroids[i]);
+
+				//Take into consideration the Asteroid's radius
+				aproximateDistanceToBoundingCircle = proximityMeasurement + radiusOfCurrentAsteroid;
+
+				if (distance <= aproximateDistanceToBoundingCircle) 
+				{
+					glColor3f(1.0, 0.0, 0.0); //Make line red
+					glVertex2f(playerPosition.x, playerPosition.y);
+					glVertex2f(positionOfCurrentAsteroid.x, positionOfCurrentAsteroid.y);
+				}
+
+				//Reset color to white
+				glColor3f(1.0, 1.0, 1.0);
+			}
+			glEnd();
+		}
 	}
 
 	void App::Execute()
@@ -133,15 +179,16 @@ namespace Engine
 		case SDL_SCANCODE_D: 
 		{
 			SDL_Log("D key was pressed.");
-			m_player->ShowBoundingCircles(true);
+			m_player->toggleDebuggingFeatures(true);
 
 			std::vector<Asteroid>::iterator it = m_asteroids.begin();
 
 			for (; it != m_asteroids.end(); it++)
 			{
-				(*it).ShowBoundingCircles(true);
+				(*it).toggleDebuggingFeatures(true);
 			}
 		}
+		//DrawLineToNearbyAsteroid(m_asteroids[1]);
 			break;
 
 		case SDL_SCANCODE_A:
@@ -152,12 +199,7 @@ namespace Engine
 
 		case SDL_SCANCODE_R:
 			SDL_Log("A key was pressed.");
-			if (m_asteroidCount > 0) 
-			{
-				m_asteroids.pop_back();
-				m_asteroidCount--;
-			}
-			SDL_Log("Current Asteroid count: %i", m_asteroidCount);
+			RemoveAsteroid();
 			break;
 
 		default:
@@ -179,12 +221,12 @@ namespace Engine
 			break;
 		case SDL_SCANCODE_D:
 		{
-			m_player->ShowBoundingCircles(false);
+			m_player->toggleDebuggingFeatures(false);
 			std::vector<Asteroid>::iterator it = m_asteroids.begin();
 
 			for (; it != m_asteroids.end(); it++)
 			{
-				(*it).ShowBoundingCircles(false);
+				(*it).toggleDebuggingFeatures(false);
 			}
 		}
 			break;
@@ -201,7 +243,6 @@ namespace Engine
 		// Update code goes here
 		//
 		m_player->Update(DESIRED_FRAME_TIME);
-		//m_asteroid->Update(DESIRED_FRAME_TIME);
 
 		std::vector<Asteroid>::iterator it = m_asteroids.begin();
 
@@ -235,7 +276,6 @@ namespace Engine
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		m_player->Render();
-		//m_asteroid->Render();
 
 		std::vector<Asteroid>::iterator it = m_asteroids.begin();
 
@@ -243,6 +283,8 @@ namespace Engine
 		{
 			(*it).Render();
 		}
+
+		DrawLinesToNearbyAsteroids();
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}

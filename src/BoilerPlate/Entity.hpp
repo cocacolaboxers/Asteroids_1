@@ -28,7 +28,12 @@ public:
 	float Warp(float, float, float);
 	virtual void ApplyImpulse(Vector2 impulse);
 	void DrawBoundingCircle(void);
-	void ShowBoundingCircles(bool);
+	float CalculateDistanceBetweenEntities(Entity);
+	Vector2 GetPosition(void);
+	float GetRadius(void);
+	bool DetectCollision(Entity);
+	void toggleDebuggingFeatures(bool);
+	bool getDebuggingStatus();
 
 protected:
 	/*PRIVATE MEMBERS*/
@@ -38,7 +43,9 @@ protected:
 	float m_entityMass;
 	MathUtilities m_utility;
 	float m_entityRadius;
-	bool m_showingCircles;
+	bool	  m_showingCircles;
+	bool	  m_isDebugging; 
+	bool  m_hasCollided;
 
 	float m_minWindowHeight;
 	float m_maxWindowHeight;

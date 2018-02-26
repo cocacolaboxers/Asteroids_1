@@ -4,8 +4,6 @@ const float SIZE_ENLARGING_FACTOR_MEDIUM = 1.5; // Enlarges a point's coodinates
 const float SIZE_ENLARGING_FACTOR_BIG = 2.0; // Enlarges a point's coodinates
 const float ROTATION_SPEED = 90.0f;
 const float MOVING_SPEED = 60.0f;
-const float HIGHEST_POINT = 50.0f;
-const float LOWEST_POINT = 25.0f;
 
 
 Asteroid::Asteroid(Size size, float xCoordinate, float yCoordinate, float initialOrientation)

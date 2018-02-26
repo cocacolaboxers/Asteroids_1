@@ -54,15 +54,17 @@ namespace Engine
 		/* =============================================================
 		 * PRIVATE FUNCTIONS
 		 * ============================================================= */
-		bool SDLInit						( );
+		bool SDLInit							( );
 		bool GlewInit						( );
 		void SetupViewport					( );
 		void CleanupSDL						( );
 		void OnResize						( int width, int height ) override;
 		void OnExit							( ) override;
 		void OnKeyDown						( SDL_KeyboardEvent keyBoardEvent ) override;
-		void OnKeyUp						( SDL_KeyboardEvent keyBoardEvent ) override;
-		void CreateAsteroid				(int);
+		void OnKeyUp							( SDL_KeyboardEvent keyBoardEvent ) override;
+		void CreateAsteroid					(int);
+		void RemoveAsteroid					(void);
+		void DrawLinesToNearbyAsteroids		();
 
 
 		/* =============================================================
