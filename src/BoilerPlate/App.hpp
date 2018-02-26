@@ -70,6 +70,7 @@ namespace Engine
 		void OnBulletCollision				(void);
 		void UpdateFrameSequence				(void);
 		void PlotFrameRate					(void);
+		void RenderEntities					(void);
 
 		/* =============================================================
 		 * MEMBERS
@@ -92,6 +93,7 @@ namespace Engine
 		float								m_deltaTime;
 		std::vector<Vector2>					m_capturedFrames;
 		int									m_currentFramePositionInVector;
+		bool									m_showingFramePlot;
 	};
 }
 #endif /* GAME_HPP */

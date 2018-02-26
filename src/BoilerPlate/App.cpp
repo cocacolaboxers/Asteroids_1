@@ -13,9 +13,11 @@ namespace Engine
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
 	const float ROTATING_SPEED = 50.0f;
 	const int MAX_ANGLE_IN_DEGREES = 360;
-	const float X_AXIS_POSITION = 100.0f;
-	const float Y_AXIS_POSITION = 100.0f;
-	const float MAX_RECORDED_FRAME_COUNT = 10.0f;
+	const float X_AXIS_POSITION = 300.0f;
+	const float Y_AXIS_POSITION = -300.0f;
+	const int MAX_RECORDED_FRAME_COUNT = 10;
+	const float X_AXIS_SCALE = 10.0f;
+	const float Y_AXIS_SCALE = 100000.0f;
 
 	App::App(const std::string& title, const int width, const int height)
 		: m_title(title)
@@ -29,18 +31,20 @@ namespace Engine
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
 		m_asteroidCount = 6;
+		m_showingFramePlot = false;
 		m_deltaTime = DESIRED_FRAME_TIME;
 
 		m_entities.push_back(m_player);
 		CreateAsteroid(m_asteroidCount);
 		SDL_Log("Current bullet count: %i", m_bullets.size());
 
-		for (int i = 0; i < MAX_RECORDED_FRAME_COUNT; i++)
-		{
-			m_capturedFrames.push_back(Vector2(static_cast<float>(i), 0.0f));
-		}
-		
 		m_currentFramePositionInVector = 0;
+		m_capturedFrames = std::vector<Vector2>(MAX_RECORDED_FRAME_COUNT);
+
+		for (int i = 0; i < m_capturedFrames.size(); i++)
+		{
+			m_capturedFrames[i] = Vector2(i, DESIRED_FRAME_TIME);
+		}
 	}
 
 	App::~App()
@@ -213,10 +217,10 @@ namespace Engine
 
 	void App::UpdateFrameSequence(void)
 	{
-		m_capturedFrames[m_currentFramePositionInVector] = Vector2(m_currentFramePositionInVector, m_deltaTime);
-		++m_currentFramePositionInVector;
+		m_capturedFrames[m_currentFramePositionInVector] = Vector2((float)m_currentFramePositionInVector, m_deltaTime);
+		m_currentFramePositionInVector++;
 
-		if (m_currentFramePositionInVector > MAX_RECORDED_FRAME_COUNT)
+		if (m_currentFramePositionInVector >= MAX_RECORDED_FRAME_COUNT)
 			m_currentFramePositionInVector = 0;
 	}
 
@@ -229,13 +233,14 @@ namespace Engine
 		glBegin(GL_LINE_STRIP);
 		glVertex2f(0.0f, 100.0f); //Draw Y axis
 		glVertex2f(0.0f, 0.0f); //Set vertex of cartesian plane;
-		glVertex2f(100.0f, 100.0f); //Draw X axis
+		glVertex2f(130.0f, 0.0f); //Draw X axis
 		glEnd();
 
 		glBegin(GL_LINE_STRIP);
+		//glColor4f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.greenValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.alphaValue);
 		for (int i = 0; i < MAX_RECORDED_FRAME_COUNT; i++)
 		{
-			glVertex2f(10 * m_capturedFrames[i].x, 10 * (DESIRED_FRAME_TIME - m_capturedFrames[i].y));
+			glVertex2f(X_AXIS_SCALE * m_capturedFrames[i].x, Y_AXIS_SCALE * (DESIRED_FRAME_TIME - m_capturedFrames[i].y));
 		}
 		glEnd();
 	}
@@ -329,6 +334,11 @@ namespace Engine
 			RemoveAsteroid();
 			break;
 
+		case SDL_SCANCODE_F:
+			SDL_Log("F key was pressed.");
+			m_showingFramePlot = true;
+			break;
+
 		case SDL_SCANCODE_SPACE: {
 			SDL_Log("Space key was pressed.");
 			Bullet* currentBullet = m_player->Shoot();
@@ -356,6 +366,11 @@ namespace Engine
 		case SDL_SCANCODE_UP:
 			m_player->SetThrustingStatus(false);
 			break;
+
+		case SDL_SCANCODE_F:
+			m_showingFramePlot = false;
+			break;
+
 		case SDL_SCANCODE_D:
 		{
 			for (int i = 0; i < m_entities.size(); i++)
@@ -388,7 +403,7 @@ namespace Engine
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
 
 		m_deltaTime = DESIRED_FRAME_TIME - (endTime-startTime);
-		//UpdateFrameSequence();
+		UpdateFrameSequence();
 
 		while (endTime < nextTimeFrame)
 		{
@@ -410,14 +425,12 @@ namespace Engine
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		for (int i = 0; i < m_entities.size(); i++)
-		{
-			m_entities[i]->Render();
-		}
+		RenderEntities();
 
 		DrawLinesToNearbyAsteroids();
 
-		//PlotFrameRate();
+		if(m_showingFramePlot)
+			PlotFrameRate();
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}
@@ -532,5 +545,20 @@ namespace Engine
 		// Cleanup SDL pointers
 		//
 		CleanupSDL();
+	}
+
+	void App::RenderEntities()
+	{
+		//Used to render all entities altogether. Renderization by using m_entities vector does work properly when deleting asteroids
+		m_player->Render();
+		for (int i = 0; i < m_asteroids.size(); i++)
+		{
+			m_asteroids[i]->Render();
+		}
+
+		for (int i = 0; i < m_bullets.size(); i++)
+		{
+			m_bullets[i]->Render();
+		}
 	}
 }
