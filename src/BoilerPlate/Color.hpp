@@ -6,6 +6,6 @@ public:
 	float redValue, greenValue, blueValue, alphaValue;
 
 	Color();
-	Color(float newRedValue, float newGreenValue, float newBlueValue, float newAlphaValue);
+	Color(float, float, float, float);
 	~Color();
 };

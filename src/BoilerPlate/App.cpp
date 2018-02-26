@@ -6,10 +6,16 @@
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 
+
 namespace Engine
 {
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
+	const float ROTATING_SPEED = 50.0f;
+	const int MAX_ANGLE_IN_DEGREES = 360;
+	const float X_AXIS_POSITION = 100.0f;
+	const float Y_AXIS_POSITION = 100.0f;
+	const float MAX_RECORDED_FRAME_COUNT = 10.0f;
 
 	App::App(const std::string& title, const int width, const int height)
 		: m_title(title)
@@ -22,7 +28,19 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroid = new Asteroid(Asteroid::Size::SMALL);
+		m_asteroidCount = 6;
+		m_deltaTime = DESIRED_FRAME_TIME;
+
+		m_entities.push_back(m_player);
+		CreateAsteroid(m_asteroidCount);
+		SDL_Log("Current bullet count: %i", m_bullets.size());
+
+		for (int i = 0; i < MAX_RECORDED_FRAME_COUNT; i++)
+		{
+			m_capturedFrames.push_back(Vector2(static_cast<float>(i), 0.0f));
+		}
+		
+		m_currentFramePositionInVector = 0;
 	}
 
 	App::~App()
@@ -32,6 +50,194 @@ namespace Engine
 			delete m_player;
 		}
 		CleanupSDL();
+	}
+
+	void App::CreateAsteroid(int amount)
+	{
+		srand(time(NULL));
+
+		int currentSize;
+		float xCoordinate;
+		float yCoordinate;
+		float orientation;
+		int signChanger = 1; //Used to ensure asteroids will have their initial position in both positive and negative sides of the screen
+		
+		for (int i = 0; i < amount; i++)
+		{
+			currentSize = rand() % ((int)Asteroid::Size::SMALL + 1);
+			xCoordinate = rand() % (m_width/2) * signChanger;
+			yCoordinate = rand() % (m_height/2) * signChanger; 
+			orientation = rand() % MAX_ANGLE_IN_DEGREES;
+
+			Asteroid* currentAsteroid = new Asteroid((Asteroid::Size)currentSize, xCoordinate,
+				yCoordinate, orientation);
+
+			m_asteroids.push_back(currentAsteroid);
+			m_entities.push_back(currentAsteroid);
+
+			signChanger *= -1;
+		}
+
+		SDL_Log("Current Asteroid count: %i", m_asteroidCount);
+	}
+
+	void App::RemoveAsteroid(void)
+	{
+		if (m_asteroidCount > 0)
+		{
+			m_asteroids.pop_back();
+			m_asteroidCount--;
+		}
+	}
+
+	void App::DrawLinesToNearbyAsteroids()
+	{
+		if (m_player->GetDebuggingStatus() && !m_player->GetCollisionStatus())
+		{
+			Vector2 playerPosition = m_player->GetPosition();
+			Vector2 positionOfCurrentAsteroid;
+			float proximityMeasurement = (m_player->GetRadius()) * 2.0f;
+			float radiusOfCurrentAsteroid;
+			float distance;
+			float aproximateDistanceToBoundingCircle;
+
+			glLoadIdentity();
+			glBegin(GL_LINE_LOOP);
+			for (int i = 0; i < m_asteroids.size(); i++)
+			{
+				positionOfCurrentAsteroid = (*m_asteroids[i]).GetPosition();
+				radiusOfCurrentAsteroid = (*m_asteroids[i]).GetRadius();
+				distance = m_player->CalculateDistanceBetweenEntities((*m_asteroids[i]));
+
+				//Take into consideration the Asteroid's radius
+				aproximateDistanceToBoundingCircle = proximityMeasurement + radiusOfCurrentAsteroid;
+
+				if (distance <= aproximateDistanceToBoundingCircle) 
+				{
+					glColor3f(m_colorPalette.RED.redValue, m_colorPalette.RED.blueValue, m_colorPalette.RED.greenValue); //Make line red
+					glVertex2f(playerPosition.x, playerPosition.y);
+					glVertex2f(positionOfCurrentAsteroid.x, positionOfCurrentAsteroid.y);
+				}
+
+				//Reset color to white
+				glColor3f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.greenValue);
+			}
+			glEnd();
+		}
+	}
+
+	void App::OnAsteroidCollision()
+	{
+		for (int i = 0; i < m_asteroids.size(); i++)
+		{
+			if (!m_player->GetCollisionStatus() && !(*m_asteroids[i]).GetCollisionStatus())
+			{
+				if (m_player->DetectCollision(*m_asteroids[i]))
+				{
+					//Aftermath of collision would go here (sound and other features maybe?)
+				}
+			}
+		}
+	}
+
+	void App::OnBulletCollision(void)
+	{
+		for (int i = 0; i < m_asteroids.size(); i++)
+		{
+			for (int j = 0; j < m_bullets.size(); j++)
+			{
+				if (m_asteroids[i]->DetectCollision(*m_bullets[j]))
+				{
+					//When bullets collide with asteroids they should split them in smaller halves
+					if (m_asteroids[i]->GetSize() == Asteroid::Size::BIG)
+					{
+						Vector2 originalPosition = m_asteroids[i]->GetPosition();
+						float originalOrientaion = m_asteroids[i]->GetOrientation();
+
+						Asteroid* firstChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x, 
+							originalPosition.y, originalOrientaion);
+
+						Asteroid* secondChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x,
+							originalPosition.y, originalOrientaion + ROTATING_SPEED);
+
+						m_asteroids.push_back(firstChild);
+						m_entities.push_back(firstChild);
+
+						m_asteroids.push_back(secondChild);
+						m_entities.push_back(secondChild);
+
+						m_bullets[j]->SetDisappearanceStatus(true);
+						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
+						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+					}
+
+					else if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
+					{
+						Vector2 originalPosition = m_asteroids[i]->GetPosition();
+						float originalOrientaion = m_asteroids[i]->GetOrientation();
+
+						Asteroid* firstChild = new Asteroid(Asteroid::Size::SMALL, originalPosition.x,
+							originalPosition.y, originalOrientaion);
+
+						Asteroid* secondChild = new Asteroid(Asteroid::Size::SMALL, originalPosition.x,
+							originalPosition.y, originalOrientaion + ROTATING_SPEED);
+
+						m_asteroids.push_back(firstChild);
+						m_entities.push_back(firstChild);
+
+						m_asteroids.push_back(secondChild);
+						m_entities.push_back(secondChild);
+
+						m_bullets[j]->SetDisappearanceStatus(true);
+						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
+						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+					}
+
+					else if (m_asteroids[i]->GetSize() == Asteroid::Size::SMALL)
+					{
+						m_bullets[j]->SetDisappearanceStatus(true);
+						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
+						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+					}
+
+					break; //Stop evaluating after a collision is detected
+				}
+				else
+				{
+					if(m_bullets[j]->GetDisappearanceStatus())
+						m_bullets.erase(m_bullets.begin() + j); //Delete bullet that has disappeared and not collided
+				}
+			}
+		}
+	}
+
+	void App::UpdateFrameSequence(void)
+	{
+		m_capturedFrames[m_currentFramePositionInVector] = Vector2(m_currentFramePositionInVector, m_deltaTime);
+		++m_currentFramePositionInVector;
+
+		if (m_currentFramePositionInVector > MAX_RECORDED_FRAME_COUNT)
+			m_currentFramePositionInVector = 0;
+	}
+
+	void App::PlotFrameRate(void)
+	{
+		glColor4f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.greenValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.alphaValue);
+		glLoadIdentity();
+		//Locate in window
+		glTranslatef(X_AXIS_POSITION, Y_AXIS_POSITION, 0.0f);
+		glBegin(GL_LINE_STRIP);
+		glVertex2f(0.0f, 100.0f); //Draw Y axis
+		glVertex2f(0.0f, 0.0f); //Set vertex of cartesian plane;
+		glVertex2f(100.0f, 100.0f); //Draw X axis
+		glEnd();
+
+		glBegin(GL_LINE_STRIP);
+		for (int i = 0; i < MAX_RECORDED_FRAME_COUNT; i++)
+		{
+			glVertex2f(10 * m_capturedFrames[i].x, 10 * (DESIRED_FRAME_TIME - m_capturedFrames[i].y));
+		}
+		glEnd();
 	}
 
 	void App::Execute()
@@ -89,7 +295,6 @@ namespace Engine
 		case SDL_SCANCODE_UP:
 			SDL_Log("Up key was pressed.");
 			m_player->MoveForward();
-			m_player->SetThrustingStatus(true);
 			break;
 
 		case SDL_SCANCODE_LEFT:
@@ -101,8 +306,41 @@ namespace Engine
 			SDL_Log("Right key was pressed.");
 			m_player->RotateRight();
 			break;
+
+		case SDL_SCANCODE_D: 
+		{
+			SDL_Log("D key was pressed.");
+
+			for (int i = 0; i < m_entities.size(); i++)
+			{
+				m_entities[i]->ToggleDebuggingFeatures(true);
+			}
+		}
+			break;
+
+		case SDL_SCANCODE_A:
+			SDL_Log("A key was pressed.");
+			CreateAsteroid(1);
+			m_asteroidCount++;
+			break;
+
+		case SDL_SCANCODE_R:
+			SDL_Log("R key was pressed.");
+			RemoveAsteroid();
+			break;
+
+		case SDL_SCANCODE_SPACE: {
+			SDL_Log("Space key was pressed.");
+			Bullet* currentBullet = m_player->Shoot();
+			m_bullets.push_back(currentBullet); 
+			m_entities.push_back(currentBullet);
+			SDL_Log("Current bullet count: %i", m_bullets.size());
+			SDL_Log("Current entity count: %i", m_entities.size());
+		}
+			break;
+
 		default:
-			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
+			SDL_Log("% key was pressed.", keyBoardEvent.keysym.scancode);
 			break;
 		}
 	}
@@ -118,6 +356,14 @@ namespace Engine
 		case SDL_SCANCODE_UP:
 			m_player->SetThrustingStatus(false);
 			break;
+		case SDL_SCANCODE_D:
+		{
+			for (int i = 0; i < m_entities.size(); i++)
+			{
+				m_entities[i]->ToggleDebuggingFeatures(false);
+			}
+		}
+			break;
 		default:
 			//DO NOTHING
 			break;
@@ -130,9 +376,19 @@ namespace Engine
 
 		// Update code goes here
 		//
+		for (int i = 0; i < m_entities.size(); i++)
+		{
+			m_entities[i]->Update(m_deltaTime);
+		}
+
+		OnAsteroidCollision();
+		OnBulletCollision();
 
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
+
+		m_deltaTime = DESIRED_FRAME_TIME - (endTime-startTime);
+		//UpdateFrameSequence();
 
 		while (endTime < nextTimeFrame)
 		{
@@ -149,15 +405,19 @@ namespace Engine
 
 	void App::Render()
 	{
-		ColorPalette colorPalette;
-
-		glClearColor(colorPalette.NAVY.redValue, colorPalette.NAVY.greenValue,
-			colorPalette.NAVY.blueValue, colorPalette.NAVY.alphaValue);
+		glClearColor(m_colorPalette.NAVY.redValue, m_colorPalette.NAVY.greenValue,
+			m_colorPalette.NAVY.blueValue, m_colorPalette.NAVY.alphaValue);
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		m_player->Render();
-		m_asteroid->Render();
+		for (int i = 0; i < m_entities.size(); i++)
+		{
+			m_entities[i]->Render();
+		}
+
+		DrawLinesToNearbyAsteroids();
+
+		//PlotFrameRate();
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}

@@ -3,6 +3,7 @@
 #define _PLAYER_H_
 
 #include "Entity.hpp"
+#include "Bullet.hpp"
 
 class Player : public Entity
 {
@@ -11,21 +12,24 @@ public:
 	Player();
 
 	/*PUBLIC FUNCTIONS*/
-	void Update(void) override;
+	void Update(float) override;
 	void Render(void) override;
 
-	void MoveForward(void) override;
+	void MoveForward(void);
 	void RotateLeft(void);
 	void RotateRight(void);
 	void DrawThrust(void);
 	void SetThrustingStatus(bool);
 	void ArrangeEntityPoints(void) override;
 	void ArrangeThrusterPoints(void);
+	Bullet* Shoot(void);
+
 
 private:
 	/*MEMBERS*/
-	bool isThrusting;
-	std::vector<Vector2> thrusterPoints;
+	bool m_isThrusting;
+	std::vector<Vector2> m_thrusterPoints;
+	float m_playerCurrentSpeed;
 };
 
 #endif // !_PLAYER_H_
