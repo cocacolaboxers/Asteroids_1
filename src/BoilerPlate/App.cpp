@@ -11,6 +11,7 @@ namespace Engine
 {
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
+	const float ROTATING_SPEED = 50.0f;
 
 	App::App(const std::string& title, const int width, const int height)
 		: m_title(title)
@@ -23,7 +24,7 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroidCount = 2;
+		m_asteroidCount = 7;
 
 		m_entities.push_back(m_player);
 		CreateAsteroid(m_asteroidCount);
@@ -113,7 +114,7 @@ namespace Engine
 		}
 	}
 
-	void App::OnCollision()
+	void App::OnAsteroidCollision()
 	{
 		for (int i = 0; i < m_asteroids.size(); i++)
 		{
@@ -121,37 +122,78 @@ namespace Engine
 			{
 				if (m_player->DetectCollision(*m_asteroids[i]))
 				{
-					//Aftermath of collision goes here (m_player's status changed as part of DetectCollision code)
+					//Aftermath of collision would go here (sound and other features maybe?)
 				}
+			}
+		}
+	}
 
-				if(m_bullets.size()>0)
+	void App::OnBulletCollision(void)
+	{
+		for (int i = 0; i < m_asteroids.size(); i++)
+		{
+			for (int j = 0; j < m_bullets.size(); j++)
+			{
+				if (m_asteroids[i]->DetectCollision(*m_bullets[j]))
 				{
-					for(int i = 0; i < m_bullets.size(); i++)
+					//When bullets collide with asteroids they should split them in smaller halves
+					if (m_asteroids[i]->GetSize() == Asteroid::Size::BIG)
 					{
-						if (m_bullets.size() < m_asteroids.size() && m_asteroids[i]->DetectCollision(*m_bullets[i]) /*&& !(m_bullets[i])->GetStatus()*/)
-						{
-							//When bullets collide with asteroids they plit in smaller halves.
-							Vector2 asteroidPositionBeforeCollision = m_asteroids[i]->GetPosition();
-							float asteroidOrientationBeforeCollision = m_asteroids[i]->getOrientation();
-							if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
-							{
-								//TODO: FIX THIS
-								Asteroid* firstChild = new Asteroid(Asteroid::Size::SMALL,
-									asteroidPositionBeforeCollision.x, asteroidPositionBeforeCollision.y,
-									asteroidOrientationBeforeCollision);
+						Vector2 originalPosition = m_asteroids[i]->GetPosition();
+						float originalOrientaion = m_asteroids[i]->GetOrientation();
 
-								Asteroid* secondChild = new Asteroid(Asteroid::Size::SMALL,
-									asteroidPositionBeforeCollision.x, asteroidPositionBeforeCollision.y,
-									-asteroidOrientationBeforeCollision);
+						Asteroid* firstChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x, 
+							originalPosition.y, originalOrientaion);
 
-								m_asteroids.push_back(firstChild);
-								m_entities.push_back(firstChild);
-								m_asteroids.push_back(secondChild);
-								m_entities.push_back(secondChild);
-							}
-						}
+						Asteroid* secondChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x,
+							originalPosition.y, originalOrientaion + ROTATING_SPEED);
+
+						m_asteroids.push_back(firstChild);
+						m_entities.push_back(firstChild);
+
+						m_asteroids.push_back(secondChild);
+						m_entities.push_back(secondChild);
+
+						m_bullets[j]->SetDisappearanceStatus(true);
+						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
+						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
 					}
-			
+
+					else if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
+					{
+						Vector2 originalPosition = m_asteroids[i]->GetPosition();
+						float originalOrientaion = m_asteroids[i]->GetOrientation();
+
+						Asteroid* firstChild = new Asteroid(Asteroid::Size::SMALL, originalPosition.x,
+							originalPosition.y, originalOrientaion);
+
+						Asteroid* secondChild = new Asteroid(Asteroid::Size::SMALL, originalPosition.x,
+							originalPosition.y, originalOrientaion + ROTATING_SPEED);
+
+						m_asteroids.push_back(firstChild);
+						m_entities.push_back(firstChild);
+
+						m_asteroids.push_back(secondChild);
+						m_entities.push_back(secondChild);
+
+						m_bullets[j]->SetDisappearanceStatus(true);
+						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
+						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+					}
+
+					else if (m_asteroids[i]->GetSize() == Asteroid::Size::SMALL)
+					{
+						m_bullets[j]->SetDisappearanceStatus(true);
+						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
+						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+					}
+
+					break; //Stop evaluating after a collision is detected
+				}
+				else
+				{
+					if(m_bullets[j]->GetDisappearanceStatus())
+						m_bullets.erase(m_bullets.begin() + j); //Delete bullet that has not collided
 				}
 			}
 		}
@@ -298,7 +340,8 @@ namespace Engine
 			m_entities[i]->Update(DESIRED_FRAME_TIME);
 		}
 
-		OnCollision();
+		OnAsteroidCollision();
+		OnBulletCollision();
 
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;

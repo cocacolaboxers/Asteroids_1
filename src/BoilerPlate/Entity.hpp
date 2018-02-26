@@ -36,7 +36,7 @@ public:
 	bool GetDebuggingStatus();
 	bool GetCollisionStatus();
 	void forcePositionChange(float, float);
-	float getOrientation(void);
+	float GetOrientation(void);
 
 protected:
 	/*PRIVATE MEMBERS*/

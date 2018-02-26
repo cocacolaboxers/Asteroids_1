@@ -66,7 +66,8 @@ namespace Engine
 		void CreateAsteroid					(int);
 		void RemoveAsteroid					(void);
 		void DrawLinesToNearbyAsteroids		(void);
-		void OnCollision						(void);
+		void OnAsteroidCollision				(void);
+		void OnBulletCollision				(void);
 
 
 		/* =============================================================

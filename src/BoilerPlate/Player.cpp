@@ -33,23 +33,30 @@ Bullet* Player::Shoot(void)
 {
 	//Returns a bullet so it can be treated as a different entity in collision detection and such
 
-	//Set bullet position to be at tip of the ship
-	Vector2 bulletPosition;
-	bulletPosition.x = m_entityPoints[0].x * sinf(m_utility.ToRadians(m_entityOrientation));
-	bulletPosition.y = m_entityPoints[0].y * cosf(m_utility.ToRadians(m_entityOrientation));
-
-	Vector2 calculatedBulletVelocity;
-
-	//Give bullet a reasonable speed (and make it travel faster than the ship)
-	calculatedBulletVelocity.x = (m_playerCurrentSpeed + BULLET_SPEED) * sinf(m_utility.ToRadians(m_entityOrientation));
-	calculatedBulletVelocity.y = (m_playerCurrentSpeed + BULLET_SPEED) * cosf(m_utility.ToRadians(m_entityOrientation));
-
 	Bullet* shotBullet = new Bullet();
 
-	shotBullet->forcePositionChange(m_entityPosition.x, m_entityPosition.y);
-	shotBullet->ApplyImpulse(calculatedBulletVelocity);
+	if(!m_hasCollided)
+	{
+		//Set bullet position to be at tip of the ship
+		Vector2 bulletPosition;
+		bulletPosition.x = m_entityPoints[0].x * sinf(m_utility.ToRadians(m_entityOrientation));
+		bulletPosition.y = m_entityPoints[0].y * cosf(m_utility.ToRadians(m_entityOrientation));
 
+		Vector2 calculatedBulletVelocity;
+
+		//Give bullet a reasonable speed (and make it travel faster than the ship)
+		calculatedBulletVelocity.x = (m_playerCurrentSpeed + BULLET_SPEED) * sinf(m_utility.ToRadians(m_entityOrientation));
+		calculatedBulletVelocity.y = (m_playerCurrentSpeed + BULLET_SPEED) * cosf(m_utility.ToRadians(m_entityOrientation));
+
+		shotBullet->forcePositionChange(m_entityPosition.x, m_entityPosition.y);
+		shotBullet->ApplyImpulse(calculatedBulletVelocity);
+	}
+	else
+	{
+		shotBullet->SetDisappearanceStatus(true);
+	}
 	return shotBullet;
+
 }
 
 void Player::Update(float deltaTime)

@@ -12,7 +12,8 @@ public:
 	void ApplyImpulse(Vector2) override;
 	void Update(float) override;
 	void Render(void) override;
-	bool GetStatus(void);
+	bool GetDisappearanceStatus(void);
+	void SetDisappearanceStatus(bool);
 
 private:
 	float m_traveledDistance;

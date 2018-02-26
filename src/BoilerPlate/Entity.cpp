@@ -151,7 +151,7 @@ void Entity::forcePositionChange(float newXcoordinate, float newYcoordinate)
 	m_entityPosition.y = newYcoordinate;
 }
 
-float Entity::getOrientation(void)
+float Entity::GetOrientation(void)
 {
 	return m_entityOrientation;
 }

@@ -44,7 +44,12 @@ void Bullet::Render(void)
 	}
 }
 
-bool Bullet::GetStatus(void)
+void Bullet::SetDisappearanceStatus(bool status)
+{
+	m_hasDisappeared = status;
+}
+
+bool Bullet::GetDisappearanceStatus(void)
 {
 	return m_hasDisappeared;
 }
