@@ -13,6 +13,9 @@ namespace Engine
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
 	const float ROTATING_SPEED = 50.0f;
 	const int MAX_ANGLE_IN_DEGREES = 360;
+	const float X_AXIS_POSITION = 100.0f;
+	const float Y_AXIS_POSITION = 100.0f;
+	const float MAX_RECORDED_FRAME_COUNT = 10.0f;
 
 	App::App(const std::string& title, const int width, const int height)
 		: m_title(title)
@@ -26,10 +29,18 @@ namespace Engine
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
 		m_asteroidCount = 6;
+		m_deltaTime = DESIRED_FRAME_TIME;
 
 		m_entities.push_back(m_player);
 		CreateAsteroid(m_asteroidCount);
 		SDL_Log("Current bullet count: %i", m_bullets.size());
+
+		for (int i = 0; i < MAX_RECORDED_FRAME_COUNT; i++)
+		{
+			m_capturedFrames.push_back(Vector2(static_cast<float>(i), 0.0f));
+		}
+		
+		m_currentFramePositionInVector = 0;
 	}
 
 	App::~App()
@@ -72,7 +83,7 @@ namespace Engine
 
 	void App::RemoveAsteroid(void)
 	{
-		if (m_asteroids.size() > 0)
+		if (m_asteroidCount > 0)
 		{
 			m_asteroids.pop_back();
 			m_asteroidCount--;
@@ -200,6 +211,35 @@ namespace Engine
 		}
 	}
 
+	void App::UpdateFrameSequence(void)
+	{
+		m_capturedFrames[m_currentFramePositionInVector] = Vector2(m_currentFramePositionInVector, m_deltaTime);
+		++m_currentFramePositionInVector;
+
+		if (m_currentFramePositionInVector > MAX_RECORDED_FRAME_COUNT)
+			m_currentFramePositionInVector = 0;
+	}
+
+	void App::PlotFrameRate(void)
+	{
+		glColor4f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.greenValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.alphaValue);
+		glLoadIdentity();
+		//Locate in window
+		glTranslatef(X_AXIS_POSITION, Y_AXIS_POSITION, 0.0f);
+		glBegin(GL_LINE_STRIP);
+		glVertex2f(0.0f, 100.0f); //Draw Y axis
+		glVertex2f(0.0f, 0.0f); //Set vertex of cartesian plane;
+		glVertex2f(100.0f, 100.0f); //Draw X axis
+		glEnd();
+
+		glBegin(GL_LINE_STRIP);
+		for (int i = 0; i < MAX_RECORDED_FRAME_COUNT; i++)
+		{
+			glVertex2f(10 * m_capturedFrames[i].x, 10 * (DESIRED_FRAME_TIME - m_capturedFrames[i].y));
+		}
+		glEnd();
+	}
+
 	void App::Execute()
 	{
 		if (m_state != GameState::INIT_SUCCESSFUL)
@@ -285,7 +325,7 @@ namespace Engine
 			break;
 
 		case SDL_SCANCODE_R:
-			SDL_Log("A key was pressed.");
+			SDL_Log("R key was pressed.");
 			RemoveAsteroid();
 			break;
 
@@ -338,7 +378,7 @@ namespace Engine
 		//
 		for (int i = 0; i < m_entities.size(); i++)
 		{
-			m_entities[i]->Update(DESIRED_FRAME_TIME);
+			m_entities[i]->Update(m_deltaTime);
 		}
 
 		OnAsteroidCollision();
@@ -346,6 +386,9 @@ namespace Engine
 
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
+
+		m_deltaTime = DESIRED_FRAME_TIME - (endTime-startTime);
+		//UpdateFrameSequence();
 
 		while (endTime < nextTimeFrame)
 		{
@@ -373,6 +416,8 @@ namespace Engine
 		}
 
 		DrawLinesToNearbyAsteroids();
+
+		//PlotFrameRate();
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}

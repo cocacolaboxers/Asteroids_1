@@ -68,7 +68,8 @@ namespace Engine
 		void DrawLinesToNearbyAsteroids		(void);
 		void OnAsteroidCollision				(void);
 		void OnBulletCollision				(void);
-
+		void UpdateFrameSequence				(void);
+		void PlotFrameRate					(void);
 
 		/* =============================================================
 		 * MEMBERS
@@ -88,6 +89,9 @@ namespace Engine
 		int									m_asteroidCount;
 		std::vector<Entity*>					m_entities;
 		ColorPalette							m_colorPalette;
+		float								m_deltaTime;
+		std::vector<Vector2>					m_capturedFrames;
+		int									m_currentFramePositionInVector;
 	};
 }
 #endif /* GAME_HPP */
