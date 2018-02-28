@@ -2,9 +2,10 @@
 #include <iostream>
 #include <algorithm>
 
+
 // OpenGL includes
 #include <GL/glew.h>
-#include <SDL2/SDL_opengl.h>
+#include <SDL_opengl.h>
 
 
 namespace Engine
@@ -30,7 +31,7 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroidCount = 6;
+		m_asteroidCount = 10;
 		m_showingFramePlot = false;
 		m_deltaTime = DESIRED_FRAME_TIME;
 
@@ -282,6 +283,25 @@ namespace Engine
 			return false;
 		}
 
+		if (TTF_Init() == -1) {
+			SDL_Log("TTF_Init: %s\n", TTF_GetError());
+			return false;
+		}
+
+		SDL_version compile_version;
+		const SDL_version *link_version = TTF_Linked_Version();
+		SDL_TTF_VERSION(&compile_version);
+
+		SDL_Log("compiled with SDL_ttf version: %d.%d.%d\n",
+			compile_version.major,
+			compile_version.minor,
+			compile_version.patch);
+
+		SDL_Log("running with SDL_ttf version: %d.%d.%d\n",
+			link_version->major,
+			link_version->minor,
+			link_version->patch);
+
 		// Setup the viewport
 		//
 		SetupViewport();
@@ -522,6 +542,7 @@ namespace Engine
 		SDL_DestroyWindow(m_mainWindow);
 
 		SDL_Quit();
+		TTF_Quit();
 	}
 
 	void App::OnResize(int width, int height)
