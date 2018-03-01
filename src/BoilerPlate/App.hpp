@@ -78,6 +78,7 @@ namespace Engine
 		void WarpEntities					(float, float);
 		void RespawnPlayer					(void);
 		void DrawRemainingLives				(void);
+		void GiveBonusLife					(void);
 
 		/* =============================================================
 		 * MEMBERS
