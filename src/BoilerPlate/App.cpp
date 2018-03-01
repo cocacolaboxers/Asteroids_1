@@ -13,19 +13,20 @@ namespace Engine
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
 	const float ROTATING_SPEED = 50.0f;
-	const int MAX_ANGLE_IN_DEGREES = 360;
+	const int	MAX_ANGLE_IN_DEGREES = 360;
 	const float X_AXIS_POSITION = 300.0f;
 	const float Y_AXIS_POSITION = -300.0f;
-	const int MAX_RECORDED_FRAME_COUNT = 10;
+	const int	MAX_RECORDED_FRAME_COUNT = 10;
 	const float X_AXIS_SCALE = 10.0f;
 	const float Y_AXIS_SCALE = 100000.0f;
-	const int SMALL_ASTEROID_COLLISION_SCORE = 20;
-	const int MEDIUM_ASTEROID_COLLISION_SCORE = 20;
-	const int BIG_ASTEROID_COLLISION_SCORE = 20;
-	const int COOLING_PERIOD_IN_SECONDS = 2; //For this period of time the player can't die or shoot
+	const int	SMALL_ASTEROID_COLLISION_SCORE = 20;
+	const int	MEDIUM_ASTEROID_COLLISION_SCORE = 15;
+	const int	BIG_ASTEROID_COLLISION_SCORE = 10;
+	const int	COOLING_PERIOD_IN_SECONDS = 2; //For this period of time the player can't die or shoot
 	const float SEPARATION_DISTANCE = 30.0f; 
 	const float REMAINING_LIVES_POSITION_X = 500.0f;
 	const float REMAINING_LIVES_POSITION_Y = 275.0f;
+	const int POINTS_FOR_BONUS_LIFE = 300;
 	std::vector<Vector2> playerShipPoints;
 
 
@@ -62,6 +63,10 @@ namespace Engine
 		m_remainingLives = 3;
 
 		playerShipPoints = m_player->GetEntityPoints();
+
+		SDL_Log("Accumulated points %i", m_scorePoints);
+
+		m_scoreCap = POINTS_FOR_BONUS_LIFE;
 	}
 
 	App::~App()
@@ -149,7 +154,11 @@ namespace Engine
 
 	void App::GiveBonusLife(void)
 	{
-		//Add logic based on amount of accumulated points: the player will get a new life every 200 points;
+		if (m_scorePoints >= m_scoreCap)
+		{
+			m_remainingLives++;
+			m_scoreCap += POINTS_FOR_BONUS_LIFE;
+		}
 	}
 
 	void App::DrawLinesToNearbyAsteroids()
@@ -215,6 +224,8 @@ namespace Engine
 					if (m_asteroids[i]->GetSize() == Asteroid::Size::BIG)
 					{
 						m_scorePoints += BIG_ASTEROID_COLLISION_SCORE;
+						SDL_Log("Accumulated points %i", m_scorePoints);
+						GiveBonusLife();
 
 						Vector2 originalPosition = m_asteroids[i]->GetPosition();
 						float originalOrientaion = m_asteroids[i]->GetOrientation();
@@ -240,6 +251,9 @@ namespace Engine
 					else if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
 					{
 						m_scorePoints += MEDIUM_ASTEROID_COLLISION_SCORE;
+						SDL_Log("Accumulated points %i", m_scorePoints);
+
+						GiveBonusLife();
 
 						Vector2 originalPosition = m_asteroids[i]->GetPosition();
 						float originalOrientaion = m_asteroids[i]->GetOrientation();
@@ -265,6 +279,10 @@ namespace Engine
 					else if (m_asteroids[i]->GetSize() == Asteroid::Size::SMALL)
 					{
 						m_scorePoints += SMALL_ASTEROID_COLLISION_SCORE;
+						SDL_Log("Accumulated points %i", m_scorePoints);
+
+						GiveBonusLife();
+
 						m_bullets[j]->SetDisappearanceStatus(true);
 						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
 						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid

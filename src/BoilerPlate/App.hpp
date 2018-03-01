@@ -102,9 +102,10 @@ namespace Engine
 		std::vector<Vector2>					m_capturedFrames;
 		int									m_currentFramePositionInVector;
 		bool									m_showingFramePlot;
-		bool									m_scorePoints;
+		int									m_scorePoints;
 		int									m_initialAseroidCount;
 		int									m_remainingLives;
+		int									m_scoreCap;
 	};
 }
 #endif /* GAME_HPP */
