@@ -3,11 +3,6 @@
 #include <algorithm>
 
 
-// OpenGL includes
-#include <GL/glew.h>
-#include <SDL_opengl.h>
-
-
 namespace Engine
 {
 	const float DESIRED_FRAME_RATE = 60.0f;
@@ -23,7 +18,7 @@ namespace Engine
 	const int	MEDIUM_ASTEROID_COLLISION_SCORE = 15;
 	const int	BIG_ASTEROID_COLLISION_SCORE = 10;
 	const int	COOLING_PERIOD_IN_SECONDS = 2; //For this period of time the player can't die or shoot
-	const float SEPARATION_DISTANCE = 30.0f; 
+	const float SEPARATION_DISTANCE = 30.0f;
 	const float REMAINING_LIVES_POSITION_X = 500.0f;
 	const float REMAINING_LIVES_POSITION_Y = 275.0f;
 	const int POINTS_FOR_BONUS_LIFE = 300;
@@ -71,7 +66,7 @@ namespace Engine
 
 	App::~App()
 	{
-		if (m_player) 
+		if (m_player)
 		{
 			delete m_player;
 		}
@@ -87,12 +82,12 @@ namespace Engine
 		float yCoordinate;
 		float orientation;
 		int signChanger = 1; //Used to ensure asteroids will have their initial position in both positive and negative sides of the screen
-		
+
 		for (int i = 0; i < amount; i++)
 		{
 			currentSize = rand() % ((int)Asteroid::Size::SMALL + 1);
-			xCoordinate = rand() % (m_width/2) * signChanger;
-			yCoordinate = rand() % (m_height/2) * signChanger; 
+			xCoordinate = rand() % (m_width / 2) * signChanger;
+			yCoordinate = rand() % (m_height / 2) * signChanger;
 			orientation = rand() % MAX_ANGLE_IN_DEGREES;
 
 			Asteroid* currentAsteroid = new Asteroid((Asteroid::Size)currentSize, xCoordinate,
@@ -130,9 +125,9 @@ namespace Engine
 	void App::DrawRemainingLives(void)
 	{
 		glColor4f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.greenValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.alphaValue);
-		
 
-		int separation = 0; 
+
+		int separation = 0;
 
 		for (int i = 0; i < m_remainingLives; i++)
 		{
@@ -140,7 +135,7 @@ namespace Engine
 			glTranslatef(REMAINING_LIVES_POSITION_X + separation, REMAINING_LIVES_POSITION_Y, 0.0f);
 
 			std::vector<Vector2>::iterator it = playerShipPoints.begin();
-			
+
 			glBegin(GL_LINE_LOOP);
 			for (; it != playerShipPoints.end(); it++)
 			{
@@ -183,7 +178,7 @@ namespace Engine
 				//Take into consideration the Asteroid's radius
 				aproximateDistanceToBoundingCircle = proximityMeasurement + radiusOfCurrentAsteroid;
 
-				if (distance <= aproximateDistanceToBoundingCircle) 
+				if (distance <= aproximateDistanceToBoundingCircle)
 				{
 					glColor3f(m_colorPalette.RED.redValue, m_colorPalette.RED.blueValue, m_colorPalette.RED.greenValue); //Make line red
 					glVertex2f(playerPosition.x, playerPosition.y);
@@ -205,7 +200,7 @@ namespace Engine
 			{
 				if (m_player->DetectCollision(*m_asteroids[i]))
 				{
-					if(!m_player->GetDebuggingStatus())
+					if (!m_player->GetDebuggingStatus())
 						RespawnPlayer();
 				}
 			}
@@ -230,7 +225,7 @@ namespace Engine
 						Vector2 originalPosition = m_asteroids[i]->GetPosition();
 						float originalOrientaion = m_asteroids[i]->GetOrientation();
 
-						Asteroid* firstChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x, 
+						Asteroid* firstChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x,
 							originalPosition.y, originalOrientaion);
 
 						Asteroid* secondChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x,
@@ -293,7 +288,7 @@ namespace Engine
 				}
 				else
 				{
-					if(m_bullets[j]->GetDisappearanceStatus())
+					if (m_bullets[j]->GetDisappearanceStatus())
 						m_bullets.erase(m_bullets.begin() + j); //Delete bullet that has disappeared and not collided
 				}
 			}
@@ -378,7 +373,7 @@ namespace Engine
 		SDL_Log("compiled with SDL_ttf version: %d.%d.%d\n",
 			compile_version.major,
 			compile_version.minor,
-			compile_version.patch); 
+			compile_version.patch);
 
 		SDL_Log("running with SDL_ttf version: %d.%d.%d\n",
 			link_version->major,
@@ -395,7 +390,7 @@ namespace Engine
 
 		return true;
 	}
-	
+
 	void App::OnKeyDown(SDL_KeyboardEvent keyBoardEvent)
 	{
 		switch (keyBoardEvent.keysym.scancode)
@@ -415,7 +410,7 @@ namespace Engine
 			m_player->RotateRight();
 			break;
 
-		case SDL_SCANCODE_D: 
+		case SDL_SCANCODE_D:
 		{
 			SDL_Log("D key was pressed.");
 
@@ -424,7 +419,7 @@ namespace Engine
 				m_entities[i]->ToggleDebuggingFeatures(true);
 			}
 		}
-			break;
+		break;
 
 		case SDL_SCANCODE_A:
 			SDL_Log("A key was pressed.");
@@ -445,12 +440,12 @@ namespace Engine
 		case SDL_SCANCODE_SPACE: {
 			SDL_Log("Space key was pressed.");
 			Bullet* currentBullet = m_player->Shoot();
-			m_bullets.push_back(currentBullet); 
+			m_bullets.push_back(currentBullet);
 			m_entities.push_back(currentBullet);
 			SDL_Log("Current bullet count: %i", m_bullets.size());
 			SDL_Log("Current entity count: %i", m_entities.size());
 		}
-			break;
+								 break;
 
 		default:
 			SDL_Log("% key was pressed.", keyBoardEvent.keysym.scancode);
@@ -481,7 +476,7 @@ namespace Engine
 				m_entities[i]->ToggleDebuggingFeatures(false);
 			}
 		}
-			break;
+		break;
 		default:
 			//DO NOTHING
 			break;
@@ -509,7 +504,7 @@ namespace Engine
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
 
-		m_deltaTime = DESIRED_FRAME_TIME - (endTime-startTime);
+		m_deltaTime = DESIRED_FRAME_TIME - (endTime - startTime);
 		UpdateFrameSequence();
 
 		while (endTime < nextTimeFrame)
@@ -536,7 +531,7 @@ namespace Engine
 
 		DrawLinesToNearbyAsteroids();
 
-		if(m_showingFramePlot)
+		if (m_showingFramePlot)
 			PlotFrameRate();
 
 		DrawRemainingLives();
@@ -679,5 +674,4 @@ namespace Engine
 			m_entities[i]->OnWindowResize(newHeight, newWidth);
 		}
 	}
-
-} 
+}

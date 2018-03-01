@@ -211,6 +211,7 @@ copy /Y "$(SolutionDir)\Externals\SDL2_ttf-2.0.14\lib\x64\zlib1.dll" "$(TargetDi
     <ClInclude Include="ColorPalette.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="MathUtilities.hpp" />
+    <ClInclude Include="OpenGLincludes.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="SDLEvent.hpp" />
     <ClInclude Include="TimeManager.hpp" />

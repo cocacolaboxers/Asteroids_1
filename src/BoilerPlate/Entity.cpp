@@ -124,7 +124,7 @@ bool Entity::DetectCollision(Entity rhs)
 
 	if (detectedCollision && !m_isDebugging) 
 	{
-		m_hasCollided = true;
+			m_hasCollided = true;
 	}
 
 	return detectedCollision;
@@ -159,6 +159,11 @@ float Entity::GetOrientation(void)
 std::vector<Vector2> Entity::GetEntityPoints(void)
 {
 	return m_entityPoints;
+}
+
+void Entity::setActivity(bool status)
+{
+	m_isInactive = status;
 }
 
 

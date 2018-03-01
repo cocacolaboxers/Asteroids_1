@@ -13,6 +13,7 @@ Player::Player()
 	ArrangeEntityPoints();
 	ArrangeThrusterPoints();
 	m_entityRadius = 10.0f;
+	m_isInactive = true;
 }
 
 void Player::ArrangeEntityPoints()
@@ -37,7 +38,7 @@ Bullet* Player::Shoot(void)
 
 	Bullet* shotBullet = new Bullet();
 
-	if(!m_hasCollided)
+	if(!m_hasCollided && !m_isInactive)
 	{
 		//Set bullet position to be at tip of the ship
 		Vector2 bulletPosition;

@@ -10,7 +10,6 @@
 #include <ctime>
 
 // Asteroids
-#include "SDLEvent.hpp"
 #include "TimeManager.hpp"
 
 //New classes includes
@@ -20,10 +19,7 @@
 #include "Player.hpp"
 #include "Asteroid.hpp"
 #include "Bullet.hpp"
-
-#include <SDL.h>
-#include <SDL_opengl.h>
-#include <SDL_ttf.h>
+#include "OpenGLincludes.hpp"
 
 namespace Engine
 {
