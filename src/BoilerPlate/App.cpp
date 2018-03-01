@@ -19,7 +19,13 @@ namespace Engine
 	const int MAX_RECORDED_FRAME_COUNT = 10;
 	const float X_AXIS_SCALE = 10.0f;
 	const float Y_AXIS_SCALE = 100000.0f;
-	//const int 
+	const int SMALL_ASTEROID_COLLISION_SCORE = 20;
+	const int MEDIUM_ASTEROID_COLLISION_SCORE = 20;
+	const int BIG_ASTEROID_COLLISION_SCORE = 20;
+	const int COOLING_PERIOD_IN_SECONDS = 2; //For this period of time the player can't die or shoot
+	std::vector<Vector2> playerShipPoints;
+	const float SEPARATION_DISTANCE = 10; 
+
 
 	App::App(const std::string& title, const int width, const int height)
 		: m_title(title)
@@ -32,7 +38,8 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroidCount = 10;
+		m_asteroidCount = 5;
+		m_initialAseroidCount = m_asteroidCount;
 		m_showingFramePlot = false;
 		m_deltaTime = DESIRED_FRAME_TIME;
 
@@ -49,6 +56,10 @@ namespace Engine
 		}
 
 		m_scorePoints = 0;
+
+		m_remainingLives = 3;
+
+		playerShipPoints = m_player->GetEntityPoints();
 	}
 
 	App::~App()
@@ -81,6 +92,7 @@ namespace Engine
 				yCoordinate, orientation);
 
 			m_asteroids.push_back(currentAsteroid);
+			m_asteroidCount++;
 			m_entities.push_back(currentAsteroid);
 
 			signChanger *= -1;
@@ -95,6 +107,24 @@ namespace Engine
 		{
 			m_asteroids.pop_back();
 			m_asteroidCount--;
+		}
+	}
+
+	void App::RespawnPlayer()
+	{
+		m_remainingLives--;
+		if (m_remainingLives > 0) {
+			m_player = new Player();
+			m_entities.push_back(m_player);
+		}
+		SDL_Log("Current life count: %i", m_remainingLives);
+	}
+
+	void App::DrawRemainingLives(void)
+	{
+		for (int i = 0; i < m_remainingLives; i++)
+		{
+
 		}
 	}
 
@@ -128,7 +158,7 @@ namespace Engine
 				}
 
 				//Reset color to white
-				glColor3f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.greenValue);
+				glColor4f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.greenValue, m_colorPalette.WHITE.alphaValue);
 			}
 			glEnd();
 		}
@@ -142,7 +172,8 @@ namespace Engine
 			{
 				if (m_player->DetectCollision(*m_asteroids[i]))
 				{
-					//Aftermath of collision would go here (sound and other features maybe?)
+					if(!m_player->GetDebuggingStatus())
+						RespawnPlayer();
 				}
 			}
 		}
@@ -159,6 +190,8 @@ namespace Engine
 					//When bullets collide with asteroids they should split them in smaller halves
 					if (m_asteroids[i]->GetSize() == Asteroid::Size::BIG)
 					{
+						m_scorePoints += BIG_ASTEROID_COLLISION_SCORE;
+
 						Vector2 originalPosition = m_asteroids[i]->GetPosition();
 						float originalOrientaion = m_asteroids[i]->GetOrientation();
 
@@ -177,10 +210,13 @@ namespace Engine
 						m_bullets[j]->SetDisappearanceStatus(true);
 						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
 						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+						m_asteroidCount++;
 					}
 
 					else if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
 					{
+						m_scorePoints += MEDIUM_ASTEROID_COLLISION_SCORE;
+
 						Vector2 originalPosition = m_asteroids[i]->GetPosition();
 						float originalOrientaion = m_asteroids[i]->GetOrientation();
 
@@ -199,13 +235,16 @@ namespace Engine
 						m_bullets[j]->SetDisappearanceStatus(true);
 						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
 						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+						m_asteroidCount++;
 					}
 
 					else if (m_asteroids[i]->GetSize() == Asteroid::Size::SMALL)
 					{
+						m_scorePoints += SMALL_ASTEROID_COLLISION_SCORE;
 						m_bullets[j]->SetDisappearanceStatus(true);
 						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
 						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+						m_asteroidCount++;
 					}
 
 					break; //Stop evaluating after a collision is detected
@@ -419,6 +458,10 @@ namespace Engine
 			m_entities[i]->Update(m_deltaTime);
 		}
 
+		//Add asteroids as the game progresses
+		if (m_asteroids.size() == 0)
+			CreateAsteroid(++m_initialAseroidCount);
+
 		OnAsteroidCollision();
 		OnBulletCollision();
 
@@ -585,6 +628,7 @@ namespace Engine
 			m_bullets[i]->Render();
 		}
 	}
+
 	void App::WarpEntities(float newHeight, float newWidth)
 	{
 		for (int i = 0; i < m_entities.size(); i++)
@@ -592,4 +636,5 @@ namespace Engine
 			m_entities[i]->OnWindowResize(newHeight, newWidth);
 		}
 	}
-}
+
+} 

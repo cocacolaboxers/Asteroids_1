@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include "ColorPalette.hpp"
 
 // OpenGL includes
 #include <GL/glew.h>
@@ -37,6 +38,7 @@ public:
 	bool GetCollisionStatus();
 	void ForcePositionChange(float, float);
 	float GetOrientation(void);
+	std::vector<Vector2> GetEntityPoints(void);
 
 protected:
 	/*PRIVATE MEMBERS*/

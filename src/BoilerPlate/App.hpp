@@ -76,6 +76,8 @@ namespace Engine
 		void PlotFrameRate					(void);
 		void RenderEntities					(void);
 		void WarpEntities					(float, float);
+		void RespawnPlayer					(void);
+		void DrawRemainingLives				(void);
 
 		/* =============================================================
 		 * MEMBERS
@@ -100,6 +102,8 @@ namespace Engine
 		int									m_currentFramePositionInVector;
 		bool									m_showingFramePlot;
 		bool									m_scorePoints;
+		int									m_initialAseroidCount;
+		int									m_remainingLives;
 	};
 }
 #endif /* GAME_HPP */

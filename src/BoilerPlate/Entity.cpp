@@ -156,6 +156,11 @@ float Entity::GetOrientation(void)
 	return m_entityOrientation;
 }
 
+std::vector<Vector2> Entity::GetEntityPoints(void)
+{
+	return m_entityPoints;
+}
+
 
 
 
