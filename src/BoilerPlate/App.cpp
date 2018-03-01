@@ -24,7 +24,9 @@ namespace Engine
 	const int BIG_ASTEROID_COLLISION_SCORE = 20;
 	const int COOLING_PERIOD_IN_SECONDS = 2; //For this period of time the player can't die or shoot
 	std::vector<Vector2> playerShipPoints;
-	const float SEPARATION_DISTANCE = 10; 
+	const float SEPARATION_DISTANCE = 30.0f; 
+	const float REMAINING_LIVES_POSITION_X = 500.0f;
+	const float REMAINING_LIVES_POSITION_Y = 275.0f;
 
 
 	App::App(const std::string& title, const int width, const int height)
@@ -122,9 +124,26 @@ namespace Engine
 
 	void App::DrawRemainingLives(void)
 	{
+		glColor4f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.greenValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.alphaValue);
+		
+
+		int separation = 0; 
+
 		for (int i = 0; i < m_remainingLives; i++)
 		{
+			glLoadIdentity();
+			glTranslatef(REMAINING_LIVES_POSITION_X + separation, REMAINING_LIVES_POSITION_Y, 0.0f);
 
+			std::vector<Vector2>::iterator it = playerShipPoints.begin();
+			
+			glBegin(GL_LINE_LOOP);
+			for (; it != playerShipPoints.end(); it++)
+			{
+				glVertex2f(((*it).x * 0.7), ((*it).y* 0.7));
+			}
+			glEnd();
+
+			separation -= SEPARATION_DISTANCE;
 		}
 	}
 
@@ -280,7 +299,6 @@ namespace Engine
 		glEnd();
 
 		glBegin(GL_LINE_STRIP);
-		//glColor4f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.greenValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.alphaValue);
 		for (int i = 0; i < MAX_RECORDED_FRAME_COUNT; i++)
 		{
 			glVertex2f(X_AXIS_SCALE * m_capturedFrames[i].x, Y_AXIS_SCALE * (DESIRED_FRAME_TIME - m_capturedFrames[i].y));
@@ -497,6 +515,8 @@ namespace Engine
 
 		if(m_showingFramePlot)
 			PlotFrameRate();
+
+		DrawRemainingLives();
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}
