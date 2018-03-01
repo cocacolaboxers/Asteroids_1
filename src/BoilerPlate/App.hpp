@@ -75,6 +75,7 @@ namespace Engine
 		void UpdateFrameSequence				(void);
 		void PlotFrameRate					(void);
 		void RenderEntities					(void);
+		void WarpEntities					(float, float);
 
 		/* =============================================================
 		 * MEMBERS
@@ -98,6 +99,7 @@ namespace Engine
 		std::vector<Vector2>					m_capturedFrames;
 		int									m_currentFramePositionInVector;
 		bool									m_showingFramePlot;
+		bool									m_scorePoints;
 	};
 }
 #endif /* GAME_HPP */

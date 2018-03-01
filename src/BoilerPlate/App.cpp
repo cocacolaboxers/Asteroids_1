@@ -19,6 +19,7 @@ namespace Engine
 	const int MAX_RECORDED_FRAME_COUNT = 10;
 	const float X_AXIS_SCALE = 10.0f;
 	const float Y_AXIS_SCALE = 100000.0f;
+	//const int 
 
 	App::App(const std::string& title, const int width, const int height)
 		: m_title(title)
@@ -46,6 +47,8 @@ namespace Engine
 		{
 			m_capturedFrames[i] = Vector2(i, DESIRED_FRAME_TIME);
 		}
+
+		m_scorePoints = 0;
 	}
 
 	App::~App()
@@ -295,7 +298,7 @@ namespace Engine
 		SDL_Log("compiled with SDL_ttf version: %d.%d.%d\n",
 			compile_version.major,
 			compile_version.minor,
-			compile_version.patch);
+			compile_version.patch); 
 
 		SDL_Log("running with SDL_ttf version: %d.%d.%d\n",
 			link_version->major,
@@ -554,7 +557,7 @@ namespace Engine
 
 		SetupViewport();
 
-		m_player->OnWindowResize(m_height, m_width);
+		WarpEntities(m_height, m_width);
 	}
 
 	void App::OnExit()
@@ -580,6 +583,13 @@ namespace Engine
 		for (int i = 0; i < m_bullets.size(); i++)
 		{
 			m_bullets[i]->Render();
+		}
+	}
+	void App::WarpEntities(float newHeight, float newWidth)
+	{
+		for (int i = 0; i < m_entities.size(); i++)
+		{
+			m_entities[i]->OnWindowResize(newHeight, newWidth);
 		}
 	}
 }
