@@ -8,13 +8,13 @@ MathUtilities::MathUtilities()
 //Returns the value of x rounded downward
 int MathUtilities::GetNearestInt(float x)
 {
-	return floorf(x);
+	return static_cast<int> (floorf(x));
 }
 
 //Gets the value of x rounded downward and returns (whatever it returns)
 int MathUtilities::GetNearestEvenInt(float x)
 {
-	int roundedX = floorf(x);
+	int roundedX = static_cast<int> (floorf(x));
 
 	if (roundedX % 2 != 0)
 		return ++roundedX;

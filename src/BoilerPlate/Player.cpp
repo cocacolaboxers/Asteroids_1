@@ -5,6 +5,8 @@ const float DESIRED_MAX_SPEED = 300.0f;
 const float FRICTION_FORCE = 0.999F;
 const float BULLET_SPEED = 350.0F;
 
+ColorPalette palette;
+
 Player::Player()
 {
 	m_isThrusting = false;
@@ -95,6 +97,7 @@ void Player::DrawThrust()
 {
 	if (m_isThrusting)
 	{
+		glColor4f(palette.ORANGE.redValue, palette.ORANGE.greenValue, palette.ORANGE.blueValue, palette.ORANGE.alphaValue);
 		std::vector<Vector2>::iterator it = m_thrusterPoints.begin();
 		glBegin(GL_LINE_LOOP);
 		for (; it != m_thrusterPoints.end(); it++)
@@ -103,6 +106,7 @@ void Player::DrawThrust()
 		}
 
 		glEnd();
+		glColor4f(palette.WHITE.redValue, palette.WHITE.blueValue, palette.WHITE.greenValue, palette.WHITE.alphaValue);
 	}
 }
 
