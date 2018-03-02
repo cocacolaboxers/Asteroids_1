@@ -80,6 +80,8 @@ namespace Engine
 		void GiveBonusLife					(void);
 		void ResetGame						(void);
 		void RespondToInput					(void);
+		void RenderScorePoints				(void);
+		void RenderResetGame					(void);
 
 		/* =============================================================
 		 * MEMBERS

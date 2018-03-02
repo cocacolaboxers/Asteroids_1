@@ -4,9 +4,9 @@ TextManager::TextManager()
 {
 }
 
-TextManager::TextManager(TTF_Font* selectedFont)
+TextManager::TextManager(int sceneWidth, int sceneHeight, int size)
 {
-	m_font = selectedFont;
+	m_font = TTF_OpenFont("fonts/Hyperspace.TTF", size);
 }
 
 bool TextManager::InitializeLibrary()
@@ -34,20 +34,15 @@ unsigned int TextManager::power_two_floor(unsigned int value)
 
 void TextManager::RenderText(std::string message, SDL_Color color, float x, float y, int size)
 {
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	glLoadIdentity();
-	glTranslatef(x, y, 0.0f);
-	glColor3f(1.0f, 1.0f, 1.0f);
+	glTranslatef(x, y, 0.f);
 
 	SDL_Surface *surface;
 
 	//Render font to a SDL_Surface
 	if ((surface = TTF_RenderText_Blended(m_font, message.c_str(), color)) == nullptr) {
-		m_font = NULL;
 		TTF_CloseFont(m_font);
-		//std::cout << "TTF_RenderText error: " << std::endl;
+		std::cout << "TTF_RenderText error: " << std::endl;
 		return;
 	}
 
@@ -76,10 +71,10 @@ void TextManager::RenderText(std::string message, SDL_Color color, float x, floa
 
 	//Draw the OpenGL texture as a Quad
 	glBegin(GL_QUADS); {
-		glTexCoord2d(0, 1); glVertex3f(0, 0, 0);
-		glTexCoord2d(1, 1); glVertex3f(0 + static_cast<float>(surface->w), 0, 0);
-		glTexCoord2d(1, 0); glVertex3f(0 + static_cast<float>(surface->w), 0 + static_cast<float>(surface->h), 0);
-		glTexCoord2d(0, 0); glVertex3f(0, 0 + static_cast<float>(surface->h), 0);
+		glTexCoord2d(0.0f, 1.0f); glVertex3f(0.0f, 0.0f, 0.0f);
+		glTexCoord2d(1.0f, 1.0f); glVertex3f(0.0f + surface->w, 0.0f, 0.0f);
+		glTexCoord2d(1.0f, 0.0f); glVertex3f(0.0f + surface->w, 0.0f + surface->h, 0.0f);
+		glTexCoord2d(0.0f, 0.0f); glVertex3f(0.0f, 0.0f + surface->h, 0.0f);
 	} glEnd();
 	glDisable(GL_TEXTURE_2D);
 

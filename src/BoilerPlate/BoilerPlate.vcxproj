@@ -237,6 +237,7 @@ copy /Y "$(SolutionDir)\Externals\irrKlang-64bit-1.6.0\bin\winx64-visualStudio\i
   </ItemGroup>
   <ItemGroup>
     <Font Include="fonts\ASTER.TTF" />
+    <Font Include="fonts\Hyperspace.ttf" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="sounds\bangLarge.wav" />

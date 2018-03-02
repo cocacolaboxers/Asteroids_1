@@ -3,12 +3,13 @@
 #define _TEXT_MANAGER_H_
 #include "OpenGLincludes.hpp"
 #include <string>
+#include <iostream>
 
 class TextManager {
 public:
 	/*CTOR*/
 	TextManager();
-	TextManager(TTF_Font*);
+	TextManager(int, int, int);
 
 	/*PUBLIC FUNCTIONS*/
 	bool InitializeLibrary();

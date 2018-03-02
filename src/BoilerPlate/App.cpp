@@ -26,6 +26,9 @@ namespace Engine
 	const int ORIGIAL_ASTEROID_COUNT = 7;
 	std::vector<Vector2> playerShipPoints;
 	const int MAX_KEY_REPETITION = 12;
+	const float MESSAGE_X_COORDINATE = -100.0f;
+	const float MESSAGE_Y_COORDINATE = 100.0f;
+	const int FONT_SIZE = 50;
 
 
 	App::App(const std::string& title, const int width, const int height)
@@ -64,20 +67,20 @@ namespace Engine
 
 		m_scoreCap = POINTS_FOR_BONUS_LIFE;
 
-		m_textManager.InitializeLibrary();
-
 		m_fontColor.r = 255;
 		m_fontColor.g = 255;
 		m_fontColor.b = 255;
 		m_fontColor.a = 255;
 
-		m_gameFont = TTF_OpenFont("fonts/ASTER.TTF", 30);
-
-		m_textManager = TextManager(m_gameFont);
+		m_textManager.InitializeLibrary();
+		m_textManager = TextManager(m_width, m_height, FONT_SIZE);
 
 		m_soundEngine = irrklang::createIrrKlangDevice();
 
 		m_inputManager = InputManager();
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	App::~App()
@@ -292,6 +295,28 @@ namespace Engine
 			m_entities.push_back(currentBullet);
 
 			m_keyRepetitionController = MAX_KEY_REPETITION;
+		}
+	}
+
+	void App::RenderScorePoints(void)
+	{
+		//Locate it
+		float scoreXcoordinate = (m_width / 2) - 100.0f;
+		float scoreYcoordinate = (m_height / 2) - 120.0f;
+
+		m_textManager.RenderText(std::to_string(m_scorePoints), m_fontColor, scoreXcoordinate, scoreYcoordinate, FONT_SIZE);
+	}
+
+	void App::RenderResetGame(void)
+	{
+		if (m_remainingLives == 0)
+		{
+			//Locate message
+			float resetMessageXcoordinate = (m_width / 2) - 300.0f;
+			float resetMessageYcoordinate = (m_height / 2) - 0.0f;
+
+			m_textManager.RenderText("GAME OVER!", m_fontColor, 0.0f, 0.0f, FONT_SIZE);
+			m_textManager.RenderText("Press S to restart", m_fontColor, -100.0f, -200.0f, FONT_SIZE);
 		}
 	}
 
@@ -652,10 +677,13 @@ namespace Engine
 
 	void App::Render()
 	{
+
 		glClearColor(m_colorPalette.NAVY.redValue, m_colorPalette.NAVY.greenValue,
 			m_colorPalette.NAVY.blueValue, m_colorPalette.NAVY.alphaValue);
 
+
 		glClear(GL_COLOR_BUFFER_BIT);
+
 
 		RenderEntities();
 
@@ -666,7 +694,8 @@ namespace Engine
 
 		DrawRemainingLives();
 
-		m_textManager.RenderText(std::to_string(m_scorePoints), m_fontColor, 450.0f, 200.0f, 30);
+		RenderScorePoints();
+		RenderResetGame();
 
 		SDL_GL_SwapWindow(m_mainWindow);	
 	}
@@ -758,7 +787,6 @@ namespace Engine
 		SDL_DestroyWindow(m_mainWindow);
 
 		SDL_Quit();
-		m_textManager.CleanUpLibrary();
 	}
 
 	void App::OnResize(int width, int height)
