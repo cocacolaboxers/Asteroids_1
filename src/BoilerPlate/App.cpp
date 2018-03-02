@@ -17,11 +17,13 @@ namespace Engine
 	const int	SMALL_ASTEROID_COLLISION_SCORE = 20;
 	const int	MEDIUM_ASTEROID_COLLISION_SCORE = 15;
 	const int	BIG_ASTEROID_COLLISION_SCORE = 10;
-	const int	COOLING_PERIOD_IN_SECONDS = 2; //For this period of time the player can't die or shoot
+	const int	COOLING_PERIOD_IN_SECONDS = 120; //For this period of time the player can't die or shoot
 	const float SEPARATION_DISTANCE = 30.0f;
 	const float REMAINING_LIVES_POSITION_X = 500.0f;
 	const float REMAINING_LIVES_POSITION_Y = 275.0f;
 	const int POINTS_FOR_BONUS_LIFE = 300;
+	const int INITIAL_LIFE_COUNT = 3;
+	const int ORIGIAL_ASTEROID_COUNT = 8;
 	std::vector<Vector2> playerShipPoints;
 
 
@@ -36,32 +38,42 @@ namespace Engine
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		m_player = new Player();
-		m_asteroidCount = 5;
+		m_asteroidCount = ORIGIAL_ASTEROID_COUNT;
 		m_initialAseroidCount = m_asteroidCount;
 		m_showingFramePlot = false;
 		m_deltaTime = DESIRED_FRAME_TIME;
 
 		m_entities.push_back(m_player);
 		CreateAsteroid(m_asteroidCount);
-		SDL_Log("Current bullet count: %i", m_bullets.size());
 
 		m_currentFramePositionInVector = 0;
 		m_capturedFrames = std::vector<Vector2>(MAX_RECORDED_FRAME_COUNT);
 
 		for (int i = 0; i < m_capturedFrames.size(); i++)
 		{
-			m_capturedFrames[i] = Vector2(i, DESIRED_FRAME_TIME);
+			m_capturedFrames[i] = Vector2(static_cast<float> (i), DESIRED_FRAME_TIME);
 		}
 
 		m_scorePoints = 0;
 
-		m_remainingLives = 3;
+		m_remainingLives = INITIAL_LIFE_COUNT;
 
 		playerShipPoints = m_player->GetEntityPoints();
 
-		SDL_Log("Accumulated points %i", m_scorePoints);
-
 		m_scoreCap = POINTS_FOR_BONUS_LIFE;
+
+		m_textManager.InitializeLibrary();
+
+		m_fontColor.r = 255;
+		m_fontColor.g = 255;
+		m_fontColor.b = 255;
+		m_fontColor.a = 255;
+
+		m_gameFont = TTF_OpenFont("fonts/ASTER.TTF", 30);
+
+		m_textManager = TextManager(m_gameFont);
+
+		soundEngine = irrklang::createIrrKlangDevice();
 	}
 
 	App::~App()
@@ -75,7 +87,7 @@ namespace Engine
 
 	void App::CreateAsteroid(int amount)
 	{
-		srand(time(NULL));
+		srand(static_cast<int> (time(NULL)));
 
 		int currentSize;
 		float xCoordinate;
@@ -86,29 +98,25 @@ namespace Engine
 		for (int i = 0; i < amount; i++)
 		{
 			currentSize = rand() % ((int)Asteroid::Size::SMALL + 1);
-			xCoordinate = rand() % (m_width / 2) * signChanger;
-			yCoordinate = rand() % (m_height / 2) * signChanger;
-			orientation = rand() % MAX_ANGLE_IN_DEGREES;
+			xCoordinate = static_cast<float> (rand() % (m_width / 2) * signChanger);
+			yCoordinate = static_cast<float> (rand() % (m_height / 2) * signChanger);
+			orientation = static_cast<float> (rand() % MAX_ANGLE_IN_DEGREES);
 
 			Asteroid* currentAsteroid = new Asteroid((Asteroid::Size)currentSize, xCoordinate,
 				yCoordinate, orientation);
 
 			m_asteroids.push_back(currentAsteroid);
-			m_asteroidCount++;
 			m_entities.push_back(currentAsteroid);
 
 			signChanger *= -1;
 		}
-
-		SDL_Log("Current Asteroid count: %i", m_asteroidCount);
 	}
 
 	void App::RemoveAsteroid(void)
 	{
-		if (m_asteroidCount > 0)
+		if (m_asteroids.size() > 0)
 		{
 			m_asteroids.pop_back();
-			m_asteroidCount--;
 		}
 	}
 
@@ -127,7 +135,7 @@ namespace Engine
 		glColor4f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.greenValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.alphaValue);
 
 
-		int separation = 0;
+		float separation = 0.0f;
 
 		for (int i = 0; i < m_remainingLives; i++)
 		{
@@ -139,7 +147,7 @@ namespace Engine
 			glBegin(GL_LINE_LOOP);
 			for (; it != playerShipPoints.end(); it++)
 			{
-				glVertex2f(((*it).x * 0.7), ((*it).y* 0.7));
+				glVertex2f(((*it).x * 0.7f), ((*it).y* 0.7f));
 			}
 			glEnd();
 
@@ -153,6 +161,42 @@ namespace Engine
 		{
 			m_remainingLives++;
 			m_scoreCap += POINTS_FOR_BONUS_LIFE;
+			soundEngine->play2D("sounds/extraShip.wav");
+		}
+	}
+
+	void App::ResetGame(void)
+	{
+		if (m_remainingLives == 0) 
+		{
+			//Return vectors to original state
+			for (int i = 0; i < m_entities.size(); i++)
+			{
+				m_entities.pop_back();
+			}
+			
+			for (int i = 0; i < m_bullets.size(); i++)
+			{
+				m_bullets.pop_back();
+			}
+
+			for (int i = 0; i < m_asteroids.size(); i++)
+			{
+				m_asteroids.pop_back();
+			}
+
+			//Return Player to original state
+			m_player = new Player();
+			m_entities.push_back(m_player);
+
+			//Create Asteroids and reset asteroid count
+			CreateAsteroid(ORIGIAL_ASTEROID_COUNT);
+			m_initialAseroidCount = ORIGIAL_ASTEROID_COUNT;
+
+			//Work with score and remaining lives
+			m_scorePoints = 0;
+			m_remainingLives = 3;
+			m_scoreCap = POINTS_FOR_BONUS_LIFE;
 		}
 	}
 
@@ -200,6 +244,7 @@ namespace Engine
 			{
 				if (m_player->DetectCollision(*m_asteroids[i]))
 				{
+					soundEngine->play2D("sounds/bangLarge.wav");
 					if (!m_player->GetDebuggingStatus())
 						RespawnPlayer();
 				}
@@ -218,8 +263,9 @@ namespace Engine
 					//When bullets collide with asteroids they should split them in smaller halves
 					if (m_asteroids[i]->GetSize() == Asteroid::Size::BIG)
 					{
+						soundEngine->play2D("sounds/bangLarge.wav");
 						m_scorePoints += BIG_ASTEROID_COLLISION_SCORE;
-						SDL_Log("Accumulated points %i", m_scorePoints);
+
 						GiveBonusLife();
 
 						Vector2 originalPosition = m_asteroids[i]->GetPosition();
@@ -240,13 +286,12 @@ namespace Engine
 						m_bullets[j]->SetDisappearanceStatus(true);
 						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
 						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
-						m_asteroidCount++;
 					}
 
 					else if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
 					{
+						soundEngine->play2D("sounds/bangMedium.wav");
 						m_scorePoints += MEDIUM_ASTEROID_COLLISION_SCORE;
-						SDL_Log("Accumulated points %i", m_scorePoints);
 
 						GiveBonusLife();
 
@@ -268,20 +313,18 @@ namespace Engine
 						m_bullets[j]->SetDisappearanceStatus(true);
 						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
 						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
-						m_asteroidCount++;
 					}
 
 					else if (m_asteroids[i]->GetSize() == Asteroid::Size::SMALL)
 					{
+						soundEngine->play2D("sounds/bangSmall.wav");
 						m_scorePoints += SMALL_ASTEROID_COLLISION_SCORE;
-						SDL_Log("Accumulated points %i", m_scorePoints);
 
 						GiveBonusLife();
 
 						m_bullets[j]->SetDisappearanceStatus(true);
 						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
 						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
-						m_asteroidCount++;
 					}
 
 					break; //Stop evaluating after a collision is detected
@@ -361,25 +404,6 @@ namespace Engine
 			return false;
 		}
 
-		if (TTF_Init() == -1) {
-			SDL_Log("TTF_Init: %s\n", TTF_GetError());
-			return false;
-		}
-
-		SDL_version compile_version;
-		const SDL_version *link_version = TTF_Linked_Version();
-		SDL_TTF_VERSION(&compile_version);
-
-		SDL_Log("compiled with SDL_ttf version: %d.%d.%d\n",
-			compile_version.major,
-			compile_version.minor,
-			compile_version.patch);
-
-		SDL_Log("running with SDL_ttf version: %d.%d.%d\n",
-			link_version->major,
-			link_version->minor,
-			link_version->patch);
-
 		// Setup the viewport
 		//
 		SetupViewport();
@@ -398,6 +422,8 @@ namespace Engine
 		case SDL_SCANCODE_UP:
 			SDL_Log("Up key was pressed.");
 			m_player->MoveForward();
+			soundEngine->play2D("sounds/thrust.wav");
+
 			break;
 
 		case SDL_SCANCODE_LEFT:
@@ -424,7 +450,11 @@ namespace Engine
 		case SDL_SCANCODE_A:
 			SDL_Log("A key was pressed.");
 			CreateAsteroid(1);
-			m_asteroidCount++;
+			break;
+
+		case SDL_SCANCODE_S:
+			SDL_Log("S key was pressed.");
+			ResetGame();
 			break;
 
 		case SDL_SCANCODE_R:
@@ -440,10 +470,11 @@ namespace Engine
 		case SDL_SCANCODE_SPACE: {
 			SDL_Log("Space key was pressed.");
 			Bullet* currentBullet = m_player->Shoot();
+			if (!currentBullet->GetDisappearanceStatus())
+				soundEngine->play2D("sounds/fire.wav");
+
 			m_bullets.push_back(currentBullet);
 			m_entities.push_back(currentBullet);
-			SDL_Log("Current bullet count: %i", m_bullets.size());
-			SDL_Log("Current entity count: %i", m_entities.size());
 		}
 								 break;
 
@@ -485,6 +516,8 @@ namespace Engine
 
 	void App::Update()
 	{
+		m_elapsedTimeInSeconds++;
+
 		double startTime = m_timer->GetElapsedTimeInSeconds();
 
 		// Update code goes here
@@ -504,7 +537,7 @@ namespace Engine
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
 
-		m_deltaTime = DESIRED_FRAME_TIME - (endTime - startTime);
+		m_deltaTime = static_cast<float> (DESIRED_FRAME_TIME - (endTime - startTime));
 		UpdateFrameSequence();
 
 		while (endTime < nextTimeFrame)
@@ -536,7 +569,9 @@ namespace Engine
 
 		DrawRemainingLives();
 
-		SDL_GL_SwapWindow(m_mainWindow);
+		m_textManager.RenderText(std::to_string(m_scorePoints), m_fontColor, 450.0f, 200.0f, 30);
+
+		SDL_GL_SwapWindow(m_mainWindow);	
 	}
 
 	bool App::SDLInit()
@@ -626,7 +661,7 @@ namespace Engine
 		SDL_DestroyWindow(m_mainWindow);
 
 		SDL_Quit();
-		TTF_Quit();
+		m_textManager.CleanUpLibrary();
 	}
 
 	void App::OnResize(int width, int height)
@@ -638,7 +673,7 @@ namespace Engine
 
 		SetupViewport();
 
-		WarpEntities(m_height, m_width);
+		OnSceneResize(m_height, m_width);
 	}
 
 	void App::OnExit()
@@ -667,7 +702,7 @@ namespace Engine
 		}
 	}
 
-	void App::WarpEntities(float newHeight, float newWidth)
+	void App::OnSceneResize(int newHeight, int newWidth)
 	{
 		for (int i = 0; i < m_entities.size(); i++)
 		{

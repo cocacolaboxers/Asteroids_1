@@ -30,11 +30,11 @@ void Entity::DrawEntity()
 	glEnd();
 }
 
-void Entity::OnWindowResize(float newWindowHeight, float newWindowWidth)
+void Entity::OnWindowResize(int newWindowHeight, int newWindowWidth)
 {
-	m_minWindowHeight = -newWindowHeight / 2;
+	m_minWindowHeight = static_cast<float> (-newWindowHeight / 2);
 	m_maxWindowHeight = -m_minWindowHeight;
-	m_minWindowWidth = -newWindowWidth / 2;
+	m_minWindowWidth = static_cast<float> (-newWindowWidth / 2);
 	m_maxWindowWidth = -m_minWindowWidth;
 }
 
@@ -124,7 +124,7 @@ bool Entity::DetectCollision(Entity rhs)
 
 	if (detectedCollision && !m_isDebugging) 
 	{
-			m_hasCollided = true;
+		m_hasCollided = true;
 	}
 
 	return detectedCollision;
@@ -160,12 +160,3 @@ std::vector<Vector2> Entity::GetEntityPoints(void)
 {
 	return m_entityPoints;
 }
-
-void Entity::setActivity(bool status)
-{
-	m_isInactive = status;
-}
-
-
-
-

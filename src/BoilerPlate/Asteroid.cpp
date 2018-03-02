@@ -14,8 +14,6 @@ Asteroid::Asteroid(Size size, float xCoordinate, float yCoordinate, float initia
 	m_entityPosition = Vector2(xCoordinate, yCoordinate);
 	ApplyImpulse(Vector2(MOVING_SPEED, MOVING_SPEED));
 
-	float realMin, realMax;
-
 	switch (m_asteroidSize)
 	{
 	case Asteroid::Size::SMALL:
@@ -140,7 +138,7 @@ void Asteroid::Update(float deltaTime)
 
 void Asteroid::ApplyImpulse(Vector2 impulse)
 {
-	int sizeBasedImpulse = ((int)m_asteroidSize + 1) * MOVING_SPEED; //Used to make asteroids move faster or slower acording to their size
+	float sizeBasedImpulse = ((int)m_asteroidSize + 1) * MOVING_SPEED; //Used to make asteroids move faster or slower acording to their size
 
 	if (m_entityMass > 0)
 	{

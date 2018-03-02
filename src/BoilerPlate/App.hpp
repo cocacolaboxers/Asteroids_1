@@ -10,6 +10,7 @@
 #include <ctime>
 
 // Asteroids
+#include <irrKlang.h>
 #include "TimeManager.hpp"
 
 //New classes includes
@@ -20,6 +21,7 @@
 #include "Asteroid.hpp"
 #include "Bullet.hpp"
 #include "OpenGLincludes.hpp"
+#include "TextManager.hpp"
 
 namespace Engine
 {
@@ -71,10 +73,11 @@ namespace Engine
 		void UpdateFrameSequence				(void);
 		void PlotFrameRate					(void);
 		void RenderEntities					(void);
-		void WarpEntities					(float, float);
+		void OnSceneResize					(int, int);
 		void RespawnPlayer					(void);
 		void DrawRemainingLives				(void);
 		void GiveBonusLife					(void);
+		void ResetGame						(void);
 
 		/* =============================================================
 		 * MEMBERS
@@ -102,6 +105,11 @@ namespace Engine
 		int									m_initialAseroidCount;
 		int									m_remainingLives;
 		int									m_scoreCap;
+		int									m_elapsedTimeInSeconds;
+		TextManager							m_textManager;
+		TTF_Font*							m_gameFont;
+		SDL_Color							m_fontColor;
+		irrklang::ISoundEngine*				soundEngine;
 	};
 }
 #endif /* GAME_HPP */

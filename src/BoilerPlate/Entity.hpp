@@ -23,7 +23,7 @@ public:
 	virtual void Update(float);
 	virtual void Render(void);
 	void DrawEntity(void);
-	void OnWindowResize(float, float);
+	void OnWindowResize(int, int);
 	virtual void ArrangeEntityPoints(void);
 	float Warp(float, float, float);
 	virtual void ApplyImpulse(Vector2 impulse);
@@ -38,7 +38,6 @@ public:
 	void ForcePositionChange(float, float);
 	float GetOrientation(void);
 	std::vector<Vector2> GetEntityPoints(void);
-	void setActivity(bool);
 
 protected:
 	/*PRIVATE MEMBERS*/
@@ -58,8 +57,6 @@ protected:
 	float m_maxWindowWidth;
 
 	std::vector<Vector2> m_entityPoints;
-
-	bool m_isInactive; //Necessary for player cooling period feature
 };
 
 #endif // !_ENTITY_H_
