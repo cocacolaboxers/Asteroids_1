@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
 	// Create Game Object
 	//
-	Engine::App* app = new Engine::App("Boiler Plate!", WIDTH, HEIGHT);
+	Engine::App* app = new Engine::App("ASTEROIDS!", WIDTH, HEIGHT);
 
 	// Initialize game
 	//
