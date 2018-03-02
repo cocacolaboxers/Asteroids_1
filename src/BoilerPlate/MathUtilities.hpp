@@ -9,7 +9,7 @@ public:
 	int GetNearestEvenInt(float x);
 
 	//Constant member
-	const float PI = 3.141592;
+	const float PI = 3.1415f;
 
 	//Returns the maximum of any two, three or four values. Uses variadic templates/function templates http://www.cplusplus.com/articles/EhvU7k9E/
 	template<class T>

@@ -10,7 +10,7 @@
 #include <ctime>
 
 // Asteroids
-#include "SDLEvent.hpp"
+#include <irrKlang.h>
 #include "TimeManager.hpp"
 
 //New classes includes
@@ -20,6 +20,9 @@
 #include "Player.hpp"
 #include "Asteroid.hpp"
 #include "Bullet.hpp"
+#include "OpenGLincludes.hpp"
+#include "TextManager.hpp"
+#include "InputManager.hpp"
 
 namespace Engine
 {
@@ -71,6 +74,14 @@ namespace Engine
 		void UpdateFrameSequence				(void);
 		void PlotFrameRate					(void);
 		void RenderEntities					(void);
+		void OnSceneResize					(int, int);
+		void RespawnPlayer					(void);
+		void DrawRemainingLives				(void);
+		void GiveBonusLife					(void);
+		void ResetGame						(void);
+		void RespondToInput					(void);
+		void RenderScorePoints				(void);
+		void RenderResetGame					(void);
 
 		/* =============================================================
 		 * MEMBERS
@@ -94,6 +105,17 @@ namespace Engine
 		std::vector<Vector2>					m_capturedFrames;
 		int									m_currentFramePositionInVector;
 		bool									m_showingFramePlot;
+		int									m_scorePoints;
+		int									m_initialAseroidCount;
+		int									m_remainingLives;
+		int									m_scoreCap;
+		int									m_elapsedTimeInSeconds;
+		TextManager							m_textManager;
+		TTF_Font*							m_gameFont;
+		SDL_Color							m_fontColor;
+		irrklang::ISoundEngine*				m_soundEngine;
+		InputManager							m_inputManager;
+		int									m_keyRepetitionController;
 	};
 }
 #endif /* GAME_HPP */

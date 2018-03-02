@@ -12,6 +12,7 @@ public:
 	Color ORANGE;
 	Color NAVY;
 	Color WHITE;
+	Color BLACK;
 
 	ColorPalette();
 	~ColorPalette();

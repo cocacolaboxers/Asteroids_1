@@ -8,10 +8,10 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include "ColorPalette.hpp"
 
 // OpenGL includes
-#include <GL/glew.h>
-#include <SDL2/SDL_opengl.h>
+#include "OpenGLincludes.hpp"
 
 class Entity
 {
@@ -23,7 +23,7 @@ public:
 	virtual void Update(float);
 	virtual void Render(void);
 	void DrawEntity(void);
-	void OnWindowResize(float, float);
+	void OnWindowResize(int, int);
 	virtual void ArrangeEntityPoints(void);
 	float Warp(float, float, float);
 	virtual void ApplyImpulse(Vector2 impulse);
@@ -37,6 +37,9 @@ public:
 	bool GetCollisionStatus();
 	void ForcePositionChange(float, float);
 	float GetOrientation(void);
+	std::vector<Vector2> GetEntityPoints(void);
+	void SetHasCollided(bool);
+
 
 protected:
 	/*PRIVATE MEMBERS*/

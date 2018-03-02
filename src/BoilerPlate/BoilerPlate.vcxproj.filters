@@ -36,6 +36,12 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>Engine\Source files</Filter>
     </ClCompile>
+    <ClCompile Include="TextManager.cpp">
+      <Filter>Engine\Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Engine\Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
@@ -71,6 +77,15 @@
     <ClInclude Include="Bullet.hpp">
       <Filter>Engine\Header files</Filter>
     </ClInclude>
+    <ClInclude Include="OpenGLincludes.hpp">
+      <Filter>Engine\Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextManager.hpp">
+      <Filter>Engine\Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.hpp">
+      <Filter>Engine\Header files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -82,5 +97,21 @@
     <Filter Include="Engine\Header files">
       <UniqueIdentifier>{da8cc683-e66e-46b9-be58-7d0e16e23f76}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\ASTER.TTF" />
+    <Font Include="fonts\Hyperspace.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="sounds\bangLarge.wav" />
+    <Media Include="sounds\bangMedium.wav" />
+    <Media Include="sounds\bangSmall.wav" />
+    <Media Include="sounds\beat1.wav" />
+    <Media Include="sounds\beat2.wav" />
+    <Media Include="sounds\extraShip.wav" />
+    <Media Include="sounds\fire.wav" />
+    <Media Include="sounds\saucerBig.wav" />
+    <Media Include="sounds\saucerSmall.wav" />
+    <Media Include="sounds\thrust.wav" />
   </ItemGroup>
 </Project>
