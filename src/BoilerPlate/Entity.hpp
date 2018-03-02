@@ -38,6 +38,8 @@ public:
 	void ForcePositionChange(float, float);
 	float GetOrientation(void);
 	std::vector<Vector2> GetEntityPoints(void);
+	void SetHasCollided(bool);
+
 
 protected:
 	/*PRIVATE MEMBERS*/

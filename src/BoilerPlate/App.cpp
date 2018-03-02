@@ -656,6 +656,7 @@ namespace Engine
 		OnAsteroidCollision();
 		OnBulletCollision();
 
+
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
 

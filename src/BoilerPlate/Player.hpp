@@ -24,7 +24,6 @@ public:
 	void ArrangeThrusterPoints(void);
 	Bullet* Shoot(void);
 
-
 private:
 	/*MEMBERS*/
 	bool m_isThrusting;

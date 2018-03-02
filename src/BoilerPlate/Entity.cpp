@@ -122,7 +122,7 @@ bool Entity::DetectCollision(Entity rhs)
 
 	bool detectedCollision = distanceBetweenEntities <= radialDistance;
 
-	if (detectedCollision && !m_isDebugging) 
+	if (detectedCollision && !m_isDebugging)
 	{
 		m_hasCollided = true;
 	}
@@ -159,4 +159,9 @@ float Entity::GetOrientation(void)
 std::vector<Vector2> Entity::GetEntityPoints(void)
 {
 	return m_entityPoints;
+}
+
+void Entity::SetHasCollided(bool status)
+{
+	m_hasCollided = status;
 }
