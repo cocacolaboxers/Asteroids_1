@@ -23,7 +23,7 @@ namespace Engine
 	const float REMAINING_LIVES_POSITION_Y = 275.0f;
 	const int POINTS_FOR_BONUS_LIFE = 300;
 	const int INITIAL_LIFE_COUNT = 3;
-	const int ORIGIAL_ASTEROID_COUNT = 8;
+	const int ORIGIAL_ASTEROID_COUNT = 3;
 	std::vector<Vector2> playerShipPoints;
 
 
@@ -190,8 +190,8 @@ namespace Engine
 			m_entities.push_back(m_player);
 
 			//Create Asteroids and reset asteroid count
-			CreateAsteroid(ORIGIAL_ASTEROID_COUNT);
 			m_initialAseroidCount = ORIGIAL_ASTEROID_COUNT;
+			CreateAsteroid(m_initialAseroidCount);
 
 			//Work with score and remaining lives
 			m_scorePoints = 0;
@@ -528,7 +528,7 @@ namespace Engine
 		}
 
 		//Add asteroids as the game progresses
-		if (m_asteroids.size() == 0)
+		if (m_asteroids.size() == 0 && !m_player->GetDebuggingStatus())
 			CreateAsteroid(++m_initialAseroidCount);
 
 		OnAsteroidCollision();
