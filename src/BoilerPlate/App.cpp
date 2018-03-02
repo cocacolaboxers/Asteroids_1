@@ -23,8 +23,9 @@ namespace Engine
 	const float REMAINING_LIVES_POSITION_Y = 275.0f;
 	const int POINTS_FOR_BONUS_LIFE = 300;
 	const int INITIAL_LIFE_COUNT = 3;
-	const int ORIGIAL_ASTEROID_COUNT = 3;
+	const int ORIGIAL_ASTEROID_COUNT = 7;
 	std::vector<Vector2> playerShipPoints;
+	const int MAX_KEY_REPETITION = 12;
 
 
 	App::App(const std::string& title, const int width, const int height)
@@ -34,6 +35,7 @@ namespace Engine
 		, m_nUpdates(0)
 		, m_timer(new TimeManager)
 		, m_mainWindow(nullptr)
+		, m_keyRepetitionController(MAX_KEY_REPETITION)
 	{
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
@@ -73,7 +75,9 @@ namespace Engine
 
 		m_textManager = TextManager(m_gameFont);
 
-		soundEngine = irrklang::createIrrKlangDevice();
+		m_soundEngine = irrklang::createIrrKlangDevice();
+
+		m_inputManager = InputManager();
 	}
 
 	App::~App()
@@ -161,7 +165,7 @@ namespace Engine
 		{
 			m_remainingLives++;
 			m_scoreCap += POINTS_FOR_BONUS_LIFE;
-			soundEngine->play2D("sounds/extraShip.wav");
+			m_soundEngine->play2D("sounds/extraShip.wav");
 		}
 	}
 
@@ -197,6 +201,97 @@ namespace Engine
 			m_scorePoints = 0;
 			m_remainingLives = 3;
 			m_scoreCap = POINTS_FOR_BONUS_LIFE;
+		}
+	}
+
+	void App::RespondToInput(void)
+	{
+		if (m_inputManager.GetUpKeyStatus())
+		{
+			SDL_Log("Up key was pressed.");
+			m_player->MoveForward();
+			m_soundEngine->play2D("sounds/thrust.wav");
+		}
+
+		if (!m_inputManager.GetUpKeyStatus())
+		{
+			m_player->SetThrustingStatus(false);
+		}
+
+		if (m_inputManager.GetLeftKeyStatus())
+		{
+			SDL_Log("Left key was pressed.");
+			m_player->RotateLeft();
+		}
+
+		if (m_inputManager.GetRightKeyStatus())
+		{
+			SDL_Log("Right key was pressed.");
+			m_player->RotateRight();
+		}
+
+		if (m_inputManager.GetDkeyStatus())
+		{
+			SDL_Log("D key was pressed.");
+
+			for (int i = 0; i < m_entities.size(); i++)
+			{
+				m_entities[i]->ToggleDebuggingFeatures(true);
+			}
+		}
+
+		if (!m_inputManager.GetDkeyStatus())
+		{
+			for (int i = 0; i < m_entities.size(); i++)
+			{
+				m_entities[i]->ToggleDebuggingFeatures(false);
+			}
+
+		}
+
+		if (m_inputManager.GetFkeyStatus())
+		{
+			SDL_Log("F key was pressed.");
+			m_showingFramePlot = true;
+		}
+
+		if (!m_inputManager.GetFkeyStatus())
+		{
+			m_showingFramePlot = false;
+		}
+
+		if (m_inputManager.GetAkeyStatus() && m_keyRepetitionController == 0)
+		{
+			SDL_Log("A key was pressed.");
+			CreateAsteroid(1);
+			m_keyRepetitionController = MAX_KEY_REPETITION;
+		}
+
+		if (m_inputManager.GetSkeyStatus() && m_keyRepetitionController == 0)
+		{
+			SDL_Log("S key was pressed.");
+			ResetGame();
+			m_keyRepetitionController = MAX_KEY_REPETITION;
+		}
+
+		if (m_inputManager.GetRkeyStatus() && m_keyRepetitionController == 0)
+		{
+			SDL_Log("R key was pressed.");
+			RemoveAsteroid();
+			m_keyRepetitionController = MAX_KEY_REPETITION;
+		}
+
+		if (m_inputManager.GetSpaceKeyStatus() && m_keyRepetitionController == 0)
+		{
+			SDL_Log("Space key was pressed.");
+			Bullet* currentBullet = m_player->Shoot();
+			if (!currentBullet->GetDisappearanceStatus())
+				m_soundEngine->play2D("sounds/fire.wav");
+
+			m_bullets.push_back(currentBullet);
+			m_entities.push_back(currentBullet);
+
+			m_keyRepetitionController = MAX_KEY_REPETITION;
 		}
 	}
 
@@ -244,7 +339,7 @@ namespace Engine
 			{
 				if (m_player->DetectCollision(*m_asteroids[i]))
 				{
-					soundEngine->play2D("sounds/bangLarge.wav");
+					m_soundEngine->play2D("sounds/bangLarge.wav");
 					if (!m_player->GetDebuggingStatus())
 						RespawnPlayer();
 				}
@@ -263,7 +358,7 @@ namespace Engine
 					//When bullets collide with asteroids they should split them in smaller halves
 					if (m_asteroids[i]->GetSize() == Asteroid::Size::BIG)
 					{
-						soundEngine->play2D("sounds/bangLarge.wav");
+						m_soundEngine->play2D("sounds/bangLarge.wav");
 						m_scorePoints += BIG_ASTEROID_COLLISION_SCORE;
 
 						GiveBonusLife();
@@ -290,7 +385,7 @@ namespace Engine
 
 					else if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
 					{
-						soundEngine->play2D("sounds/bangMedium.wav");
+						m_soundEngine->play2D("sounds/bangMedium.wav");
 						m_scorePoints += MEDIUM_ASTEROID_COLLISION_SCORE;
 
 						GiveBonusLife();
@@ -317,7 +412,7 @@ namespace Engine
 
 					else if (m_asteroids[i]->GetSize() == Asteroid::Size::SMALL)
 					{
-						soundEngine->play2D("sounds/bangSmall.wav");
+						m_soundEngine->play2D("sounds/bangSmall.wav");
 						m_scorePoints += SMALL_ASTEROID_COLLISION_SCORE;
 
 						GiveBonusLife();
@@ -420,63 +515,40 @@ namespace Engine
 		switch (keyBoardEvent.keysym.scancode)
 		{
 		case SDL_SCANCODE_UP:
-			SDL_Log("Up key was pressed.");
-			m_player->MoveForward();
-			soundEngine->play2D("sounds/thrust.wav");
-
+			m_inputManager.SetUpKeyPressedStatus(true);
 			break;
 
 		case SDL_SCANCODE_LEFT:
-			SDL_Log("Left key was pressed.");
-			m_player->RotateLeft();
+			m_inputManager.SetLeftKeyPressedStatus(true);
 			break;
 
 		case SDL_SCANCODE_RIGHT:
-			SDL_Log("Right key was pressed.");
-			m_player->RotateRight();
+			m_inputManager.SetRightKeyPressedStatus(true);
 			break;
 
 		case SDL_SCANCODE_D:
-		{
-			SDL_Log("D key was pressed.");
-
-			for (int i = 0; i < m_entities.size(); i++)
-			{
-				m_entities[i]->ToggleDebuggingFeatures(true);
-			}
-		}
-		break;
+			m_inputManager.SetDkeyPressedStatus(true);
+			break;
 
 		case SDL_SCANCODE_A:
-			SDL_Log("A key was pressed.");
-			CreateAsteroid(1);
+			m_inputManager.SetAkeyPressedStatus(true);
 			break;
 
 		case SDL_SCANCODE_S:
-			SDL_Log("S key was pressed.");
-			ResetGame();
+			m_inputManager.SetSkeyPressedStatus(true);
 			break;
 
 		case SDL_SCANCODE_R:
-			SDL_Log("R key was pressed.");
-			RemoveAsteroid();
+			m_inputManager.SetRkeyPressedStatus(true);
 			break;
 
 		case SDL_SCANCODE_F:
-			SDL_Log("F key was pressed.");
-			m_showingFramePlot = true;
+			m_inputManager.SetFkeyPressedStatus(true);
 			break;
 
-		case SDL_SCANCODE_SPACE: {
-			SDL_Log("Space key was pressed.");
-			Bullet* currentBullet = m_player->Shoot();
-			if (!currentBullet->GetDisappearanceStatus())
-				soundEngine->play2D("sounds/fire.wav");
-
-			m_bullets.push_back(currentBullet);
-			m_entities.push_back(currentBullet);
-		}
-								 break;
+		case SDL_SCANCODE_SPACE:
+			m_inputManager.SetSpaceKeyPressedStatus(true);
+			break;
 
 		default:
 			SDL_Log("% key was pressed.", keyBoardEvent.keysym.scancode);
@@ -488,26 +560,44 @@ namespace Engine
 	{
 		switch (keyBoardEvent.keysym.scancode)
 		{
-		case SDL_SCANCODE_ESCAPE:
-			OnExit();
-			break;
-
 		case SDL_SCANCODE_UP:
-			m_player->SetThrustingStatus(false);
+			m_inputManager.SetUpKeyPressedStatus(false);
 			break;
 
-		case SDL_SCANCODE_F:
-			m_showingFramePlot = false;
+		case SDL_SCANCODE_LEFT:
+			m_inputManager.SetLeftKeyPressedStatus(false);
+			break;
+
+		case SDL_SCANCODE_RIGHT:
+			m_inputManager.SetRightKeyPressedStatus(false);
 			break;
 
 		case SDL_SCANCODE_D:
-		{
-			for (int i = 0; i < m_entities.size(); i++)
-			{
-				m_entities[i]->ToggleDebuggingFeatures(false);
-			}
-		}
+			m_inputManager.SetDkeyPressedStatus(false);
 		break;
+
+		case SDL_SCANCODE_A:
+			m_inputManager.SetAkeyPressedStatus(false);
+			break;
+
+		case SDL_SCANCODE_S:
+			m_inputManager.SetSkeyPressedStatus(false);
+			break;
+
+		case SDL_SCANCODE_R:
+			m_inputManager.SetRkeyPressedStatus(false);
+			break;
+
+		case SDL_SCANCODE_F:
+			m_inputManager.SetFkeyPressedStatus(false);
+			break;
+
+		case SDL_SCANCODE_SPACE:
+			m_inputManager.SetSpaceKeyPressedStatus(false);
+			break;
+		case SDL_SCANCODE_ESCAPE:
+			OnExit();
+			break;
 		default:
 			//DO NOTHING
 			break;
@@ -522,6 +612,13 @@ namespace Engine
 
 		// Update code goes here
 		//
+
+		if (m_keyRepetitionController > 0)
+			m_keyRepetitionController--;
+
+
+		RespondToInput();
+
 		for (int i = 0; i < m_entities.size(); i++)
 		{
 			m_entities[i]->Update(m_deltaTime);

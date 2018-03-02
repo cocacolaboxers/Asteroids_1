@@ -22,6 +22,7 @@
 #include "Bullet.hpp"
 #include "OpenGLincludes.hpp"
 #include "TextManager.hpp"
+#include "InputManager.hpp"
 
 namespace Engine
 {
@@ -78,6 +79,7 @@ namespace Engine
 		void DrawRemainingLives				(void);
 		void GiveBonusLife					(void);
 		void ResetGame						(void);
+		void RespondToInput					(void);
 
 		/* =============================================================
 		 * MEMBERS
@@ -109,7 +111,9 @@ namespace Engine
 		TextManager							m_textManager;
 		TTF_Font*							m_gameFont;
 		SDL_Color							m_fontColor;
-		irrklang::ISoundEngine*				soundEngine;
+		irrklang::ISoundEngine*				m_soundEngine;
+		InputManager							m_inputManager;
+		int									m_keyRepetitionController;
 	};
 }
 #endif /* GAME_HPP */
