@@ -5,30 +5,32 @@
 
 namespace Engine
 {
-	const float DESIRED_FRAME_RATE = 60.0f;
-	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
-	const float ROTATING_SPEED = 50.0f;
-	const int	MAX_ANGLE_IN_DEGREES = 360;
-	const float X_AXIS_POSITION = 300.0f;
-	const float Y_AXIS_POSITION = -300.0f;
-	const int	MAX_RECORDED_FRAME_COUNT = 10;
-	const float X_AXIS_SCALE = 10.0f;
-	const float Y_AXIS_SCALE = 100000.0f;
-	const int	SMALL_ASTEROID_COLLISION_SCORE = 20;
+	const float DESIRED_FRAME_RATE				= 60.0f;
+	const float DESIRED_FRAME_TIME				= 1.0f / DESIRED_FRAME_RATE;
+	const float ROTATING_SPEED					= 50.0f;
+	const int	MAX_ANGLE_IN_DEGREES				= 360;
+	const float X_AXIS_POSITION					= 300.0f;
+	const float Y_AXIS_POSITION					= -300.0f;
+	const int	MAX_RECORDED_FRAME_COUNT			= 10;
+	const float X_AXIS_SCALE						= 10.0f;
+	const float Y_AXIS_SCALE						= 100000.0f;
+	const int	SMALL_ASTEROID_COLLISION_SCORE	= 20;
 	const int	MEDIUM_ASTEROID_COLLISION_SCORE = 15;
-	const int	BIG_ASTEROID_COLLISION_SCORE = 10;
-	const int	COOLING_PERIOD_IN_SECONDS = 120; //For this period of time the player can't die or shoot
-	const float SEPARATION_DISTANCE = 30.0f;
-	const float REMAINING_LIVES_POSITION_X = 500.0f;
-	const float REMAINING_LIVES_POSITION_Y = 275.0f;
-	const int POINTS_FOR_BONUS_LIFE = 300;
-	const int INITIAL_LIFE_COUNT = 3;
-	const int ORIGIAL_ASTEROID_COUNT = 7;
+	const int	BIG_ASTEROID_COLLISION_SCORE		= 10;
+	const int	COOLING_PERIOD_IN_SECONDS		= 120; //For this period of time the player can't die or shoot
+	const float SEPARATION_DISTANCE				= 30.0f;
+	const float REMAINING_LIVES_POSITION_X		= 500.0f;
+	const float REMAINING_LIVES_POSITION_Y		= 275.0f;
+	const int	POINTS_FOR_BONUS_LIFE			= 300;
+	const int	INITIAL_LIFE_COUNT				= 3;
+	const int	ORIGIAL_ASTEROID_COUNT			= 7;
+	const int	MAX_KEY_REPETITION				= 12;
+	const float MESSAGE_X_COORDINATE				= -100.0f;
+	const float MESSAGE_Y_COORDINATE				= 100.0f;
+	const int	FONT_SIZE						= 50;
+	const int	 COLOR_VALUE						= 255;
+
 	std::vector<Vector2> playerShipPoints;
-	const int MAX_KEY_REPETITION = 12;
-	const float MESSAGE_X_COORDINATE = -100.0f;
-	const float MESSAGE_Y_COORDINATE = 100.0f;
-	const int FONT_SIZE = 50;
 
 
 	App::App(const std::string& title, const int width, const int height)
@@ -67,10 +69,10 @@ namespace Engine
 
 		m_scoreCap = POINTS_FOR_BONUS_LIFE;
 
-		m_fontColor.r = 255;
-		m_fontColor.g = 255;
-		m_fontColor.b = 255;
-		m_fontColor.a = 255;
+		m_fontColor.r = COLOR_VALUE;
+		m_fontColor.g = COLOR_VALUE;
+		m_fontColor.b = COLOR_VALUE;
+		m_fontColor.a = COLOR_VALUE;
 
 		m_textManager.InitializeLibrary();
 		m_textManager = TextManager(m_width, m_height, FONT_SIZE);
@@ -78,9 +80,6 @@ namespace Engine
 		m_soundEngine = irrklang::createIrrKlangDevice();
 
 		m_inputManager = InputManager();
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	App::~App()
@@ -134,14 +133,12 @@ namespace Engine
 			m_player = new Player();
 			m_entities.push_back(m_player);
 		}
-		SDL_Log("Current life count: %i", m_remainingLives);
 	}
 
 	void App::DrawRemainingLives(void)
 	{
 		glColor4f(m_colorPalette.WHITE.redValue, m_colorPalette.WHITE.greenValue, m_colorPalette.WHITE.blueValue, m_colorPalette.WHITE.alphaValue);
-
-
+		
 		float separation = 0.0f;
 
 		for (int i = 0; i < m_remainingLives; i++)
@@ -164,7 +161,8 @@ namespace Engine
 
 	void App::GiveBonusLife(void)
 	{
-		if (m_scorePoints >= m_scoreCap)
+		//Make sure the player will never have more than 5 lives
+		if (m_scorePoints >= m_scoreCap && m_remainingLives <5)
 		{
 			m_remainingLives++;
 			m_scoreCap += POINTS_FOR_BONUS_LIFE;
@@ -211,7 +209,6 @@ namespace Engine
 	{
 		if (m_inputManager.GetUpKeyStatus())
 		{
-			SDL_Log("Up key was pressed.");
 			m_player->MoveForward();
 			m_soundEngine->play2D("sounds/thrust.wav");
 		}
@@ -223,20 +220,16 @@ namespace Engine
 
 		if (m_inputManager.GetLeftKeyStatus())
 		{
-			SDL_Log("Left key was pressed.");
 			m_player->RotateLeft();
 		}
 
 		if (m_inputManager.GetRightKeyStatus())
 		{
-			SDL_Log("Right key was pressed.");
 			m_player->RotateRight();
 		}
 
 		if (m_inputManager.GetDkeyStatus())
 		{
-			SDL_Log("D key was pressed.");
-
 			for (int i = 0; i < m_entities.size(); i++)
 			{
 				m_entities[i]->ToggleDebuggingFeatures(true);
@@ -254,7 +247,6 @@ namespace Engine
 
 		if (m_inputManager.GetFkeyStatus())
 		{
-			SDL_Log("F key was pressed.");
 			m_showingFramePlot = true;
 		}
 
@@ -265,28 +257,24 @@ namespace Engine
 
 		if (m_inputManager.GetAkeyStatus() && m_keyRepetitionController == 0)
 		{
-			SDL_Log("A key was pressed.");
 			CreateAsteroid(1);
 			m_keyRepetitionController = MAX_KEY_REPETITION;
 		}
 
 		if (m_inputManager.GetSkeyStatus() && m_keyRepetitionController == 0)
 		{
-			SDL_Log("S key was pressed.");
 			ResetGame();
 			m_keyRepetitionController = MAX_KEY_REPETITION;
 		}
 
 		if (m_inputManager.GetRkeyStatus() && m_keyRepetitionController == 0)
 		{
-			SDL_Log("R key was pressed.");
 			RemoveAsteroid();
 			m_keyRepetitionController = MAX_KEY_REPETITION;
 		}
 
 		if (m_inputManager.GetSpaceKeyStatus() && m_keyRepetitionController == 0)
 		{
-			SDL_Log("Space key was pressed.");
 			Bullet* currentBullet = m_player->Shoot();
 			if (!currentBullet->GetDisappearanceStatus())
 				m_soundEngine->play2D("sounds/fire.wav");
@@ -300,7 +288,7 @@ namespace Engine
 
 	void App::RenderScorePoints(void)
 	{
-		//Locate it
+		//Locate the score
 		float scoreXcoordinate = (m_width / 2) - 100.0f;
 		float scoreYcoordinate = (m_height / 2) - 120.0f;
 
@@ -364,7 +352,7 @@ namespace Engine
 			{
 				if (m_player->DetectCollision(*m_asteroids[i]))
 				{
-					m_soundEngine->play2D("sounds/bangLarge.wav");
+					m_soundEngine->play2D("sounds/beat2.wav");
 					if (!m_player->GetDebuggingStatus())
 						RespawnPlayer();
 				}
@@ -380,75 +368,79 @@ namespace Engine
 			{
 				if (m_asteroids[i]->DetectCollision(*m_bullets[j]))
 				{
-					//When bullets collide with asteroids they should split them in smaller halves
-					if (m_asteroids[i]->GetSize() == Asteroid::Size::BIG)
+					if (!m_asteroids[i]->GetDebuggingStatus()) 
 					{
-						m_soundEngine->play2D("sounds/bangLarge.wav");
-						m_scorePoints += BIG_ASTEROID_COLLISION_SCORE;
+						//When bullets collide with asteroids they should split them in smaller halves
+						if (m_asteroids[i]->GetSize() == Asteroid::Size::BIG)
+						{
+							m_soundEngine->play2D("sounds/bangLarge.wav");
+							m_scorePoints += BIG_ASTEROID_COLLISION_SCORE;
 
-						GiveBonusLife();
+							GiveBonusLife();
 
-						Vector2 originalPosition = m_asteroids[i]->GetPosition();
-						float originalOrientaion = m_asteroids[i]->GetOrientation();
+							Vector2 originalPosition = m_asteroids[i]->GetPosition();
+							float originalOrientaion = m_asteroids[i]->GetOrientation();
 
-						Asteroid* firstChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x,
-							originalPosition.y, originalOrientaion);
+							Asteroid* firstChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x,
+								originalPosition.y, originalOrientaion);
 
-						Asteroid* secondChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x,
-							originalPosition.y, originalOrientaion + ROTATING_SPEED);
+							Asteroid* secondChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x,
+								originalPosition.y, originalOrientaion + ROTATING_SPEED);
 
-						m_asteroids.push_back(firstChild);
-						m_entities.push_back(firstChild);
+							m_asteroids.push_back(firstChild);
+							m_entities.push_back(firstChild);
 
-						m_asteroids.push_back(secondChild);
-						m_entities.push_back(secondChild);
+							m_asteroids.push_back(secondChild);
+							m_entities.push_back(secondChild);
 
-						m_bullets[j]->SetDisappearanceStatus(true);
-						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
-						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+							m_bullets[j]->SetDisappearanceStatus(true);
+							m_bullets.erase(m_bullets.begin() + j); //Delete bullet
+							m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+						}
+
+						else if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
+						{
+							m_soundEngine->play2D("sounds/bangMedium.wav");
+							m_scorePoints += MEDIUM_ASTEROID_COLLISION_SCORE;
+
+							GiveBonusLife();
+
+							Vector2 originalPosition = m_asteroids[i]->GetPosition();
+							float originalOrientaion = m_asteroids[i]->GetOrientation();
+
+							Asteroid* firstChild = new Asteroid(Asteroid::Size::SMALL, originalPosition.x,
+								originalPosition.y, originalOrientaion);
+
+							Asteroid* secondChild = new Asteroid(Asteroid::Size::SMALL, originalPosition.x,
+								originalPosition.y, originalOrientaion + ROTATING_SPEED);
+
+							m_asteroids.push_back(firstChild);
+							m_entities.push_back(firstChild);
+
+							m_asteroids.push_back(secondChild);
+							m_entities.push_back(secondChild);
+
+							m_bullets[j]->SetDisappearanceStatus(true);
+							m_bullets.erase(m_bullets.begin() + j); //Delete bullet
+							m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+						}
+
+						else if (m_asteroids[i]->GetSize() == Asteroid::Size::SMALL)
+						{
+							m_soundEngine->play2D("sounds/bangSmall.wav");
+							m_scorePoints += SMALL_ASTEROID_COLLISION_SCORE;
+
+							GiveBonusLife();
+
+							m_bullets[j]->SetDisappearanceStatus(true);
+							m_bullets.erase(m_bullets.begin() + j); //Delete bullet
+							m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+						}
+
+						break; //Stop evaluating after a collision is detected
 					}
-
-					else if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
-					{
-						m_soundEngine->play2D("sounds/bangMedium.wav");
-						m_scorePoints += MEDIUM_ASTEROID_COLLISION_SCORE;
-
-						GiveBonusLife();
-
-						Vector2 originalPosition = m_asteroids[i]->GetPosition();
-						float originalOrientaion = m_asteroids[i]->GetOrientation();
-
-						Asteroid* firstChild = new Asteroid(Asteroid::Size::SMALL, originalPosition.x,
-							originalPosition.y, originalOrientaion);
-
-						Asteroid* secondChild = new Asteroid(Asteroid::Size::SMALL, originalPosition.x,
-							originalPosition.y, originalOrientaion + ROTATING_SPEED);
-
-						m_asteroids.push_back(firstChild);
-						m_entities.push_back(firstChild);
-
-						m_asteroids.push_back(secondChild);
-						m_entities.push_back(secondChild);
-
-						m_bullets[j]->SetDisappearanceStatus(true);
-						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
-						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
 					}
-
-					else if (m_asteroids[i]->GetSize() == Asteroid::Size::SMALL)
-					{
-						m_soundEngine->play2D("sounds/bangSmall.wav");
-						m_scorePoints += SMALL_ASTEROID_COLLISION_SCORE;
-
-						GiveBonusLife();
-
-						m_bullets[j]->SetDisappearanceStatus(true);
-						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
-						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
-					}
-
-					break; //Stop evaluating after a collision is detected
-				}
+					
 				else
 				{
 					if (m_bullets[j]->GetDisappearanceStatus())
@@ -576,7 +568,6 @@ namespace Engine
 			break;
 
 		default:
-			SDL_Log("% key was pressed.", keyBoardEvent.keysym.scancode);
 			break;
 		}
 	}

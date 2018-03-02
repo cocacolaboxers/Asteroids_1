@@ -12,7 +12,6 @@ TextManager::TextManager(int sceneWidth, int sceneHeight, int size)
 bool TextManager::InitializeLibrary()
 {
 	if (TTF_Init() == -1) {
-		SDL_Log("TTF_Init: %s\n", TTF_GetError());
 		return false;
 	}
 	else
@@ -42,7 +41,6 @@ void TextManager::RenderText(std::string message, SDL_Color color, float x, floa
 	//Render font to a SDL_Surface
 	if ((surface = TTF_RenderText_Blended(m_font, message.c_str(), color)) == nullptr) {
 		TTF_CloseFont(m_font);
-		std::cout << "TTF_RenderText error: " << std::endl;
 		return;
 	}
 
@@ -83,8 +81,3 @@ void TextManager::RenderText(std::string message, SDL_Color color, float x, floa
 	SDL_FreeSurface(surface);
 	glDeleteTextures(1, &texId);
 }
-
-
-
-
-
